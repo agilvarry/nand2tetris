@@ -43,10 +43,7 @@ CHIP ALU {
 
     PARTS:
    //if (zx == 1) set x = 0, zxOut
-   //set = x, zeroX
-   Not16(in=x, out=notX); 
-   And16(a=x, b=notX, out=zeroX);
-   Mux16(a=x ,b=zeroX ,sel=zx ,out=zxOut );
+   Mux16(a=x ,b=false ,sel=zx ,out=zxOut );
 
    // if (nx == 1) set x = !x, nxOut
    //not zx, notZX
@@ -54,10 +51,7 @@ CHIP ALU {
    Mux16(a=zxOut, b=notZX, sel=nx ,out=nxOut);
 
    // if (zy == 1) set y = 0, zyOut
-   //set = y, zeroY
-   Not16(in=y, out=notY); 
-   And16(a=y, b=notY, out=zeroY);  
-   Mux16(a=y ,b=zeroY ,sel=zy ,out=zyOut );
+   Mux16(a=y ,b=false ,sel=zy ,out=zyOut );
 
    // if (ny == 1) set y = !y , nyOut
    //not zy, notZY
@@ -72,5 +66,14 @@ CHIP ALU {
 
   // if (no == 1) set out = !out
   Not16(in=fOut, out=notF); 
-  Mux16(a=fOut ,b=notF ,sel=no ,out=out);
+  Mux16(a=fOut ,b=notF ,sel=no ,out=out, out[15]=out1, out[0..7]=out2, out[8..15]=out3);
+
+  // if (out < 0) set ng = 1
+  Mux(a=false,b=true,sel=out1,out=ng);
+
+  // if (out == 0) set zr = 1
+  Or8Way(in=out2, out=or1);
+  Or8Way(in=out3, out=or2);
+  Or(a=or1, b=or2, out=or3);
+  Mux(a=true, b=false, sel=or3, out=zr); 
 }
