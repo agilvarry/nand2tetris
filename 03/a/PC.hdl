@@ -16,5 +16,16 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    //we have to work backwards through the else if statements and loop back around from the register
+    Register(in=out4, load=true, out=out, out=out0);
+
+    Inc16(in=out0 ,out=out1); //compute inc
+
+    Mux16(a=out0 ,b=out1 ,sel=inc ,out=out2); //else if (inc[t] == 1)
+ 
+    Mux16(a=out2 ,b=in ,sel=load ,out=out3 ); //else if (load[t] == 1)
+    
+    Mux16(a=out3, b=false, sel=reset, out=out4); //if      (reset[t] == 1)
+   
+     
 }
