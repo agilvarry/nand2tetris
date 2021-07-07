@@ -53,7 +53,7 @@ CHIP CPU {
     Mux16(a=outA, b=inM, sel=instruction[12], out=outMux2);
 
   
-    DRegister(in=aluOut, load=instruction[12], out=outD);
+    DRegister(in=aluOut, load=instruction[4], out=outD);
 
 
     And(a=instruction[11], b=instruction[15], out=zx); 
@@ -77,5 +77,5 @@ CHIP CPU {
     Or(a=jump01, b=jump2, out=jump012);
     And(a=jump012, b=instruction[15], out=jump);
 
-    PC(in=PCin, reset=reset, load=jump, inc=true, out[0..14]=pc);
+    PC(in=pcIn, reset=reset, load=jump, inc=true, out[0..14]=pc);
 }
