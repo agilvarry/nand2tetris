@@ -15,15 +15,14 @@ symbols = {
     'R13':13,
     'R14':14,
     'R15':15,
-    'SP':0,
-    'LCL':1,
-    'ARG':2,
-    'THIS':3,
-    'THAT':4,
+    'SP': 0,
+    'LCL': 1,
+    'ARG': 2,
+    'THIS': 3,
+    'THAT': 4,
     'SCREEN':16384,
     'KBD':24576    
 }
-
 
 def get_instructions(asm):
     instructions = []
@@ -37,6 +36,7 @@ def get_instructions(asm):
 def filter_comment(line):
     i = line.split('//')
     return i[0].strip()
+
 def instruction_type(i):
     if i == '(':
         return 'L'
@@ -45,8 +45,22 @@ def instruction_type(i):
     else:
         return 'C'        
 
-def symbol(s):
-    return symbols[s]
+def strip_paren(s):
+    return s.strip('()')
+
+def strip_at(s):
+    return s.strip('@')
+
+
+def symbol(type, s):
+    if type == "L":
+        i = strip_paren(s)
+    elif type == "A":
+        i = strip_at(s)
+    if i.isnumeric():
+        return int(i)
+    else:
+        return symbols[i]     
 
 def get_c(c):
     instr = c
