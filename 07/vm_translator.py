@@ -3,14 +3,16 @@ import vm_parser
 
 
 def main(vm):
+    line_num = 0
     asm = ''
     vm_lines = vm_parser.strip(vm) #strip comments and whitespace
     for line in vm_lines:
         commands = line.split() #separate commands, remove whitespace
-        if len(commands) == 1:
-            asm = asm + code_writer.writeArithmetic(commands[0])
-        else:
+        if len(commands) == 1: #arithmetic operation
+            asm = asm + code_writer.writeArithmetic(commands[0], line_num)
+        else: #pushpop
             asm = asm + code_writer.writePushPop(commands)
+        line_num = line_num+1    
     return asm + code_writer.end_loop()
 
 if __name__ == "__main__":

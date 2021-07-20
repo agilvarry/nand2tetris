@@ -1,0 +1,467 @@
+// ['push', 'constant', '17']
+@17 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+// ['push', 'constant', '17']
+@17 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//eq
+@SP
+ A=M
+ A=A-1
+ D=M
+ A=A-1
+ D=M-D
+ @EQ2
+ D;JEQ
+ @NEQ2
+ 0;JMP
+ (EQ2)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+M=-1
+ @CONT2
+ 0;JMP
+ (NEQ2)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=0
+ (CONT2)
+ @SP
+ M=M-1
+// ['push', 'constant', '17']
+@17 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+// ['push', 'constant', '16']
+@16 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//eq
+@SP
+ A=M
+ A=A-1
+ D=M
+ A=A-1
+ D=M-D
+ @EQ5
+ D;JEQ
+ @NEQ5
+ 0;JMP
+ (EQ5)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+M=-1
+ @CONT5
+ 0;JMP
+ (NEQ5)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=0
+ (CONT5)
+ @SP
+ M=M-1
+// ['push', 'constant', '16']
+@16 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+// ['push', 'constant', '17']
+@17 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//eq
+@SP
+ A=M
+ A=A-1
+ D=M
+ A=A-1
+ D=M-D
+ @EQ8
+ D;JEQ
+ @NEQ8
+ 0;JMP
+ (EQ8)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+M=-1
+ @CONT8
+ 0;JMP
+ (NEQ8)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=0
+ (CONT8)
+ @SP
+ M=M-1
+// ['push', 'constant', '892']
+@892 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+// ['push', 'constant', '891']
+@891 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//lt
+@SP
+ A=M
+ A=A-1
+ D=M
+ A=A-1
+ D=M-D
+ @LT11
+ D;JLT
+ @NLT11
+ 0;JMP
+ (LT11)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=-1
+ @CONT11
+ 0;JMP
+ (NLT11)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=0
+ (CONT11)
+ @SP
+ M=M-1
+// ['push', 'constant', '891']
+@891 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+// ['push', 'constant', '892']
+@892 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//lt
+@SP
+ A=M
+ A=A-1
+ D=M
+ A=A-1
+ D=M-D
+ @LT14
+ D;JLT
+ @NLT14
+ 0;JMP
+ (LT14)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=-1
+ @CONT14
+ 0;JMP
+ (NLT14)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=0
+ (CONT14)
+ @SP
+ M=M-1
+// ['push', 'constant', '891']
+@891 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+// ['push', 'constant', '891']
+@891 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//lt
+@SP
+ A=M
+ A=A-1
+ D=M
+ A=A-1
+ D=M-D
+ @LT17
+ D;JLT
+ @NLT17
+ 0;JMP
+ (LT17)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=-1
+ @CONT17
+ 0;JMP
+ (NLT17)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=0
+ (CONT17)
+ @SP
+ M=M-1
+// ['push', 'constant', '32767']
+@32767 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+// ['push', 'constant', '32766']
+@32766 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//gt
+@SP
+ A=M
+ A=A-1
+ D=M
+ A=A-1
+ D=M-D
+ @GT20
+ D;JGT
+ @NGT20
+ 0;JMP
+ (GT20)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=-1
+ @CONT20
+ 0;JMP
+ (NGT20)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=0
+ (CONT20)
+ @SP
+ M=M-1
+// ['push', 'constant', '32766']
+@32766 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+// ['push', 'constant', '32767']
+@32767 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//gt
+@SP
+ A=M
+ A=A-1
+ D=M
+ A=A-1
+ D=M-D
+ @GT23
+ D;JGT
+ @NGT23
+ 0;JMP
+ (GT23)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=-1
+ @CONT23
+ 0;JMP
+ (NGT23)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=0
+ (CONT23)
+ @SP
+ M=M-1
+// ['push', 'constant', '32766']
+@32766 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+// ['push', 'constant', '32766']
+@32766 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//gt
+@SP
+ A=M
+ A=A-1
+ D=M
+ A=A-1
+ D=M-D
+ @GT26
+ D;JGT
+ @NGT26
+ 0;JMP
+ (GT26)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=-1
+ @CONT26
+ 0;JMP
+ (NGT26)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=0
+ (CONT26)
+ @SP
+ M=M-1
+// ['push', 'constant', '57']
+@57 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+// ['push', 'constant', '31']
+@31 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+// ['push', 'constant', '53']
+@53 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//add
+@SP 
+A=M 
+A=A-1 
+D=M 
+A=A-1 
+M=M+D 
+@SP 
+M=M-1
+// ['push', 'constant', '112']
+@112 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//sub
+@SP 
+A=M 
+A=A-1 
+D=M 
+A=A-1 
+M=M-D 
+@SP 
+M=M-1
+//neg
+@SP 
+A=M 
+A=A-1 
+D=M 
+M=M-D 
+M=M-D
+//and
+// ['push', 'constant', '82']
+@82 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//or
+//not
+(END) 
+@END 
+0;JMP 
