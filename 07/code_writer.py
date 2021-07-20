@@ -6,6 +6,22 @@ arithmetic = {
     'or' : '@SP \nA=M \nA=A-1 \nD=M \nA=A-1 \nM=D|M \n@SP \nM=M-1\n',
     'not' : '@SP \nA=M \nA=A-1 \nM=!M \n'
 }
+temp = {
+    "0": "@5",
+    "1": "@6",
+    "2": "@7",
+    "3": "@8",
+    "4": "@9",
+    "5": "@10",
+    "6": "@11",
+    "7": "@12"
+}
+segments = {
+    "local": "LCL",
+    "argument" : "ARG",
+    "this" : "THIS",
+    "that" : "THAT"
+}
 
 
 def writeArithmetic(command, line_num):
@@ -22,7 +38,17 @@ def writeArithmetic(command, line_num):
 def writePushPop(commands):
     comment = f"// {commands}\n"
     if commands[0] == 'push':
-        return comment + f"@{commands[2]} \nD=A \n@SP \nA=M \nM=D \n@SP \nM=M+1\n"
+        if commands[1] == 'constant':
+            return comment + f"@{commands[2]} \nD=A \n@SP \nA=M \nM=D \n@SP \nM=M+1\n"
+        elif commands[1] == "temp":
+            return comment + f"{temp[commands[2]]}\n D=M\n @SP\n A=M\n M=D\n @SP\n M=M+1\n" 
+        else:
+            return comment + f"@{commands[2]}\n D=A\n @{segments[commands[1]]}\n A=D+M\n D=M\n @SP\n A=M\n M=D\n @SP\n M=M+1\n" 
+    if commands[0] == 'pop':
+        if commands[1] == "temp":
+            return comment + f"@SP\n M=M-1\n A=M\n D=M\n {temp[commands[2]]}\n M=D\n" 
+        else:    
+            return comment + f"@{commands[2]}\n D=A\n @{segments[commands[1]]}\n D=D+M\n @R13\n M=D\n @SP\n M=M-1\n A=M\n D=M\n @R13\n A=M\n M=D\n" 
 
 def end_loop():
     return "(END) \n@END \n0;JMP "
