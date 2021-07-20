@@ -2,9 +2,9 @@ arithmetic = {
     'add': '@SP \nA=M \nA=A-1 \nD=M \nA=A-1 \nM=M+D \n@SP \nM=M-1\n',
     'sub' : '@SP \nA=M \nA=A-1 \nD=M \nA=A-1 \nM=M-D \n@SP \nM=M-1\n',
     'neg' : '@SP \nA=M \nA=A-1 \nD=M \nM=M-D \nM=M-D\n',
-    'and' : '',
-    'or' : '',
-    'not' : ''
+    'and' : '@SP \nA=M \nA=A-1 \nD=M \nA=A-1 \nM=D&M \n@SP \nM=M-1\n',
+    'or' : '@SP \nA=M \nA=A-1 \nD=M \nA=A-1 \nM=D|M \n@SP \nM=M-1\n',
+    'not' : '@SP \nA=M \nA=A-1 \nM=!M \n'
 }
 
 

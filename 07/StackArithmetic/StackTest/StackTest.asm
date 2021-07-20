@@ -452,6 +452,14 @@ D=M
 M=M-D 
 M=M-D
 //and
+@SP 
+A=M 
+A=A-1 
+D=M 
+A=A-1 
+M=D&M 
+@SP 
+M=M-1
 // ['push', 'constant', '82']
 @82 
 D=A 
@@ -461,7 +469,19 @@ M=D
 @SP 
 M=M+1
 //or
+@SP 
+A=M 
+A=A-1 
+D=M 
+A=A-1 
+M=D|M 
+@SP 
+M=M-1
 //not
+@SP 
+A=M 
+A=A-1 
+M=!M 
 (END) 
 @END 
 0;JMP 
