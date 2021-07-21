@@ -48,6 +48,8 @@ def writePushPop(commands):
             return comment + f"{temp[commands[2]]}\n D=M\n @SP\n A=M\n M=D\n @SP\n M=M+1\n" 
         elif commands[1] == "pointer":
             return comment + f"{pointer[commands[2]]}\n D=M\n @SP\n A=M\n M=D\n @SP\n M=M+1\n"
+        elif commands[1] == "static":
+            return comment + f"@{commands[1]}.{commands[2]}\n D=M\n @SP\n A=M\n M=D\n @SP\n M=M+1\n" #may need to update with file name
         else:
             return comment + f"@{commands[2]}\n D=A\n @{segments[commands[1]]}\n A=D+M\n D=M\n @SP\n A=M\n M=D\n @SP\n M=M+1\n" 
     if commands[0] == 'pop':
@@ -55,6 +57,8 @@ def writePushPop(commands):
             return comment + f"@SP\n M=M-1\n A=M\n D=M\n {temp[commands[2]]}\n M=D\n" 
         elif commands[1] == "pointer":
             return comment + f"@SP\n M=M-1\n A=M\n D=M\n {pointer[commands[2]]}\n M=D\n" 
+        elif commands[1] == "static":
+            return comment + f"@SP\n M=M-1\n A=M\n D=M\n @{commands[1]}.{commands[2]}\n M=D\n" #may need to update with file name
         else:    
             return comment + f"@{commands[2]}\n D=A\n @{segments[commands[1]]}\n D=D+M\n @R13\n M=D\n @SP\n M=M-1\n A=M\n D=M\n @R13\n A=M\n M=D\n" 
 
