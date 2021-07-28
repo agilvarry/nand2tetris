@@ -63,10 +63,13 @@ def writePushPop(commands):
             return comment + f"@{commands[2]}\n D=A\n @{segments[commands[1]]}\n D=D+M\n @R13\n M=D\n @SP\n M=M-1\n A=M\n D=M\n @R13\n A=M\n M=D\n" 
 
 def writeLabel(command):
-    return f"({command})"           
+    return f"({command})\n"           
+
+def writeIf(command):
+    return f"@SP\n M=M-1\n A=M\n D=M\n @{command}\n D;JGT\n"
 
 def writeGoto(command):
-    return f"@SP\n M=M-1\n A=M\n D=M\n @{command}\n D;JGT\n"
+    return f"@{command}\n 0;JMP\n"    
 
 def end_loop():
     return "(END) \n@END \n0;JMP "

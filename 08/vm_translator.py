@@ -13,14 +13,16 @@ def main(vm):
         elif commands[0] == 'label':
             asm = asm + code_writer.writeLabel(commands[1])
         elif commands[0] == 'if-goto':
-            asm = asm + code_writer.writeGoto(commands[1])
+            asm = asm + code_writer.writeIf(commands[1])
+        elif commands[0] == "goto":
+            asm = asm + code_writer.writeGoto(commands[1])    
         else: #pushpop
             asm = asm + code_writer.writePushPop(commands)
         line_num = line_num+1    
     return asm + code_writer.end_loop()
 
 if __name__ == "__main__":
-    file_in = open(r"ProgramFlow\BasicLoop\BasicLoop.vm", "r")
+    file_in = open(r"ProgramFlow\FibonacciSeries\FibonacciSeries.vm", "r")
     convert = main(file_in)
-    out = open("ProgramFlow\BasicLoop\BasicLoop.asm", "w")
+    out = open("ProgramFlow\FibonacciSeries\FibonacciSeries.asm", "w")
     out.write(convert)
