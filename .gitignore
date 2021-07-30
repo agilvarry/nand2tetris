@@ -2,3 +2,5 @@
 *.tst
 *.out
 *.hack
+*.pyc
+\08\__pycache__

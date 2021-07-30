@@ -71,5 +71,20 @@ def writeIf(command):
 def writeGoto(command):
     return f"@{command}\n 0;JMP\n"    
 
+def writeFunction(commands):
+    comment = f"//{commands}\n"
+    i = int(commands[2])
+    pushCommand = ['push', 'constant', '0']
+    local = ""
+    while i > 0:
+        print(i)
+        local = local + writePushPop(pushCommand)
+        i = i - 1
+    return comment + f"({commands[1]})\n {local}"
+
+def writeReturn(command):
+    comment = f"//{command}\n"
+    return comment + "@LCL \n D=M \n @endFrame \n M=D \n   @5 \n D=D-A \n @retAddr \n  M=D \n  @SP\n M=M-1 \n A=M \n D=M \n @ARG \n A=M \n M=D \n  @ARG \n D=M+1 \n @SP \n M=D \n @endFrame \n D=M \n @1 \n D=D-A\n A=D\n D=M \n @THAT \n M=D \n @endFrame \n D=M \n @2 \n D=D-A \n A=D\n D=M \n @THIS \n M=D \n @endFrame \n D=M \n @3 \n D=D-A \n A=D\n D=M \n @ARG \n M=D \n @endFrame \n D=M \n @4 \n D=D-A \n A=D\n D=M \n @LCL \n M=D \n @endFrame \n A=M \n 0;JMP \n"
+
 def end_loop():
     return "(END) \n@END \n0;JMP "
