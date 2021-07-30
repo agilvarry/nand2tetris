@@ -1,0 +1,136 @@
+//push retAddrLabel
+@{returnAddress} \n
+D=A \n
+@SP \n
+A=M \n
+M=D \n
+@SP \n
+M=M+1 \n
+//push LCL
+@LCL \n
+D=M \n
+@SP \n
+A=M \n
+M=D \n
+@SP \n
+M=M+1 \n
+//push ARG
+@ARG \n
+D=M \n
+@SP \n
+A=M \n
+M=D \n
+@SP \n
+M=M+1 \n
+//push THIS
+@THIS \n
+D=M \n
+@SP \n
+A=M \n
+M=D \n
+@SP \n
+M=M+1 \n
+//push THAT
+@THAT \n
+D=M \n
+@SP \n
+A=M \n
+M=D \n
+@SP \n
+M=M+1 \n
+//ARG = SP-5-nArgs
+@5 \n
+D=A \n
+@{nArgs} \n
+D=D+A \n
+@SP \n
+D=M-D \n
+@ARG \n
+M=D \n
+//LCL = SP
+@SP \n
+D=M  \n
+@LCL \n
+M=D \n
+//goto functionName
+@{commands[1]}\n 
+0;JMP\n
+//(retAddrLabel) \n
+({returnAddress}) \n
+
+
+
+"@{returnAddress} \n D=A \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n 
+@LCL \n D=M \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n 
+@ARG \n D=M \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n 
+@THIS \n D=M \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n 
+@THAT \n D=M \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n 
+@5 \n D=A \n @{nArgs} \n D=D+A \n @SP \n D=M-D \n @ARG \n M=D \n 
+@SP \n D=M  \n @LCL \n M=D \n 
+@{commands[1]}\n  0;JMP\n 
+({returnAddress}) \n"
+
+
+
+"@{returnAddress} \n D=A \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n @LCL \n D=M \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n @ARG \n D=M \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n @THIS \n D=M \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n @THAT \n D=M \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n @5 \n D=A \n @{nArgs} \n D=D+A \n @SP \n D=M-D \n @ARG \n M=D \n @SP \n D=M  \n @LCL \n M=D \n @{commands[1]}\n  0;JMP\n ({returnAddress}) \n"
+
+
+
+
+
+
+
+"@LCL \n 
+D=M \n 
+@endFrame \n 
+M=D \n 
+@5 \n 
+D=D-A \n 
+@retAddr \n  
+M=D \n  
+@SP\n 
+M=M-1 \n 
+A=M \n 
+D=M \n 
+@ARG \n 
+A=M \n 
+M=D \n  
+@ARG \n 
+D=M+1 \n 
+@SP \n 
+M=D \n 
+@endFrame \n 
+D=M \n 
+@1 \n
+D=D-A\n 
+A=D\n 
+D=M \n 
+@THAT \n 
+M=D \n 
+@endFrame \n 
+D=M \n 
+@2 \n 
+D=D-A \n 
+A=D\n 
+D=M \n 
+@THIS \n 
+M=D \n 
+@endFrame \n 
+D=M \n
+@3 \n 
+D=D-A \n 
+A=D\n 
+D=M \n 
+@ARG \n 
+M=D \n 
+@endFrame \n
+D=M \n 
+@4 \n 
+D=D-A \n 
+A=D\n 
+D=M \n 
+@LCL \n 
+M=D \n 
+@endFrame \n 
+A=M \n 
+0;JMP \n"

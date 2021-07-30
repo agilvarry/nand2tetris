@@ -1,3 +1,4 @@
+//Bootstrap code
 // ['push', 'argument', '1']
 @1
  D=A

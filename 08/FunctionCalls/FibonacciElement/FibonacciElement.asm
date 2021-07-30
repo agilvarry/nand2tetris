@@ -1,0 +1,472 @@
+//Bootstrap code
+@256
+ D=A
+ @SP
+ M=D
+//['call', 'Sys.init', '0']
+@Sys.init.return. 
+ D=A 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @LCL 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @ARG 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @THIS 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @THAT 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @5 
+ D=A 
+ @0 
+ D=D+A 
+ @SP 
+ D=M-D 
+ @ARG 
+ M=D 
+ @SP 
+ D=M  
+ @LCL 
+ M=D 
+ @Sys.init
+  0;JMP
+ (Sys.init.return.) 
+//['function', 'Main.fibonacci', '0']
+(Main.fibonacci)
+ // ['push', 'argument', '0']
+@0
+ D=A
+ @ARG
+ A=D+M
+ D=M
+ @SP
+ A=M
+ M=D
+ @SP
+ M=M+1
+// ['push', 'constant', '2']
+@2 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//lt
+@SP
+ A=M
+ A=A-1
+ D=M
+ A=A-1
+ D=M-D
+ @LT3
+ D;JLT
+ @NLT3
+ 0;JMP
+ (LT3)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=-1
+ @CONT3
+ 0;JMP
+ (NLT3)
+ @SP
+ A=M
+ A=A-1
+ A=A-1
+ M=0
+ (CONT3)
+ @SP
+ M=M-1
+@SP
+ M=M-1
+ A=M
+ D=M
+ @IF_TRUE
+ D;JGT
+@IF_FALSE
+ 0;JMP
+(IF_TRUE)
+// ['push', 'argument', '0']
+@0
+ D=A
+ @ARG
+ A=D+M
+ D=M
+ @SP
+ A=M
+ M=D
+ @SP
+ M=M+1
+//return
+@LCL 
+ D=M 
+ @endFrame 
+ M=D 
+ @5 
+ D=D-A 
+ @retAddr 
+  M=D 
+  @SP
+ M=M-1 
+ A=M 
+ D=M 
+ @ARG 
+ A=M 
+ M=D 
+  @ARG 
+ D=M+1 
+ @SP 
+ M=D 
+ @endFrame 
+ D=M 
+ @1 
+ D=D-A
+ A=D
+ D=M 
+ @THAT 
+ M=D 
+ @endFrame 
+ D=M 
+ @2 
+ D=D-A 
+ A=D
+ D=M 
+ @THIS 
+ M=D 
+ @endFrame 
+ D=M 
+ @3 
+ D=D-A 
+ A=D
+ D=M 
+ @ARG 
+ M=D 
+ @endFrame 
+ D=M 
+ @4 
+ D=D-A 
+ A=D
+ D=M 
+ @LCL 
+ M=D 
+ @endFrame 
+ A=M 
+ 0;JMP 
+(IF_FALSE)
+// ['push', 'argument', '0']
+@0
+ D=A
+ @ARG
+ A=D+M
+ D=M
+ @SP
+ A=M
+ M=D
+ @SP
+ M=M+1
+// ['push', 'constant', '2']
+@2 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//sub
+@SP 
+A=M 
+A=A-1 
+D=M 
+A=A-1 
+M=M-D 
+@SP 
+M=M-1
+//['call', 'Main.fibonacci', '1']
+@Main.fibonacci.return.13 
+ D=A 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @LCL 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @ARG 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @THIS 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @THAT 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @5 
+ D=A 
+ @1 
+ D=D+A 
+ @SP 
+ D=M-D 
+ @ARG 
+ M=D 
+ @SP 
+ D=M  
+ @LCL 
+ M=D 
+ @Main.fibonacci
+  0;JMP
+ (Main.fibonacci.return.13) 
+// ['push', 'argument', '0']
+@0
+ D=A
+ @ARG
+ A=D+M
+ D=M
+ @SP
+ A=M
+ M=D
+ @SP
+ M=M+1
+// ['push', 'constant', '1']
+@1 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//sub
+@SP 
+A=M 
+A=A-1 
+D=M 
+A=A-1 
+M=M-D 
+@SP 
+M=M-1
+//['call', 'Main.fibonacci', '1']
+@Main.fibonacci.return.17 
+ D=A 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @LCL 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @ARG 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @THIS 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @THAT 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @5 
+ D=A 
+ @1 
+ D=D+A 
+ @SP 
+ D=M-D 
+ @ARG 
+ M=D 
+ @SP 
+ D=M  
+ @LCL 
+ M=D 
+ @Main.fibonacci
+  0;JMP
+ (Main.fibonacci.return.17) 
+//add
+@SP 
+A=M 
+A=A-1 
+D=M 
+A=A-1 
+M=M+D 
+@SP 
+M=M-1
+//return
+@LCL 
+ D=M 
+ @endFrame 
+ M=D 
+ @5 
+ D=D-A 
+ @retAddr 
+  M=D 
+  @SP
+ M=M-1 
+ A=M 
+ D=M 
+ @ARG 
+ A=M 
+ M=D 
+  @ARG 
+ D=M+1 
+ @SP 
+ M=D 
+ @endFrame 
+ D=M 
+ @1 
+ D=D-A
+ A=D
+ D=M 
+ @THAT 
+ M=D 
+ @endFrame 
+ D=M 
+ @2 
+ D=D-A 
+ A=D
+ D=M 
+ @THIS 
+ M=D 
+ @endFrame 
+ D=M 
+ @3 
+ D=D-A 
+ A=D
+ D=M 
+ @ARG 
+ M=D 
+ @endFrame 
+ D=M 
+ @4 
+ D=D-A 
+ A=D
+ D=M 
+ @LCL 
+ M=D 
+ @endFrame 
+ A=M 
+ 0;JMP 
+(END) 
+@END 
+0;JMP //['function', 'Sys.init', '0']
+(Sys.init)
+ // ['push', 'constant', '4']
+@4 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
+//['call', 'Main.fibonacci', '1']
+@Main.fibonacci.return.2 
+ D=A 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @LCL 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @ARG 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @THIS 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @THAT 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @5 
+ D=A 
+ @1 
+ D=D+A 
+ @SP 
+ D=M-D 
+ @ARG 
+ M=D 
+ @SP 
+ D=M  
+ @LCL 
+ M=D 
+ @Main.fibonacci
+  0;JMP
+ (Main.fibonacci.return.2) 
+(WHILE)
+@WHILE
+ 0;JMP
+(END) 
+@END 
+0;JMP 

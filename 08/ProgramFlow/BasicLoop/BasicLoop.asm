@@ -1,3 +1,4 @@
+//Bootstrap code
 // ['push', 'constant', '0']
 @0 
 D=A 
@@ -20,7 +21,8 @@ M=M+1
  @R13
  A=M
  M=D
-(LOOP_START)// ['push', 'argument', '0']
+(LOOP_START)
+// ['push', 'argument', '0']
 @0
  D=A
  @ARG

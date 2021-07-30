@@ -1,3 +1,4 @@
+//Bootstrap code
 //['function', 'SimpleFunction.test', '2']
 (SimpleFunction.test)
  // ['push', 'constant', '0']
@@ -97,7 +98,7 @@ M=M-1
  D=M 
  @endFrame 
  M=D 
-   @5 
+ @5 
  D=D-A 
  @retAddr 
   M=D 

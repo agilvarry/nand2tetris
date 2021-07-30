@@ -39,7 +39,7 @@ def writeArithmetic(command, line_num):
     else:    
         return comment + arithmetic[command]
 
-def writePushPop(commands):
+def writePushPop(commands,file_name =""):
     comment = f"// {commands}\n"
     if commands[0] == 'push':
         if commands[1] == 'constant':
@@ -49,7 +49,7 @@ def writePushPop(commands):
         elif commands[1] == "pointer":
             return comment + f"{pointer[commands[2]]}\n D=M\n @SP\n A=M\n M=D\n @SP\n M=M+1\n"
         elif commands[1] == "static":
-            return comment + f"@{commands[1]}.{commands[2]}\n D=M\n @SP\n A=M\n M=D\n @SP\n M=M+1\n" #may need to update with file name
+            return comment + f"@{file_name}.{commands[2]}\n D=M\n @SP\n A=M\n M=D\n @SP\n M=M+1\n" 
         else:
             return comment + f"@{commands[2]}\n D=A\n @{segments[commands[1]]}\n A=D+M\n D=M\n @SP\n A=M\n M=D\n @SP\n M=M+1\n" 
     if commands[0] == 'pop':
@@ -58,7 +58,7 @@ def writePushPop(commands):
         elif commands[1] == "pointer":
             return comment + f"@SP\n M=M-1\n A=M\n D=M\n {pointer[commands[2]]}\n M=D\n" 
         elif commands[1] == "static":
-            return comment + f"@SP\n M=M-1\n A=M\n D=M\n @{commands[1]}.{commands[2]}\n M=D\n" #may need to update with file name
+            return comment + f"@SP\n M=M-1\n A=M\n D=M\n @{file_name}.{commands[2]}\n M=D\n" 
         else:    
             return comment + f"@{commands[2]}\n D=A\n @{segments[commands[1]]}\n D=D+M\n @R13\n M=D\n @SP\n M=M-1\n A=M\n D=M\n @R13\n A=M\n M=D\n" 
 
@@ -84,7 +84,13 @@ def writeFunction(commands):
 
 def writeReturn(command):
     comment = f"//{command}\n"
-    return comment + "@LCL \n D=M \n @endFrame \n M=D \n   @5 \n D=D-A \n @retAddr \n  M=D \n  @SP\n M=M-1 \n A=M \n D=M \n @ARG \n A=M \n M=D \n  @ARG \n D=M+1 \n @SP \n M=D \n @endFrame \n D=M \n @1 \n D=D-A\n A=D\n D=M \n @THAT \n M=D \n @endFrame \n D=M \n @2 \n D=D-A \n A=D\n D=M \n @THIS \n M=D \n @endFrame \n D=M \n @3 \n D=D-A \n A=D\n D=M \n @ARG \n M=D \n @endFrame \n D=M \n @4 \n D=D-A \n A=D\n D=M \n @LCL \n M=D \n @endFrame \n A=M \n 0;JMP \n"
+    return comment + "@LCL \n D=M \n @endFrame \n M=D \n @5 \n D=D-A \n @retAddr \n  M=D \n  @SP\n M=M-1 \n A=M \n D=M \n @ARG \n A=M \n M=D \n  @ARG \n D=M+1 \n @SP \n M=D \n @endFrame \n D=M \n @1 \n D=D-A\n A=D\n D=M \n @THAT \n M=D \n @endFrame \n D=M \n @2 \n D=D-A \n A=D\n D=M \n @THIS \n M=D \n @endFrame \n D=M \n @3 \n D=D-A \n A=D\n D=M \n @ARG \n M=D \n @endFrame \n D=M \n @4 \n D=D-A \n A=D\n D=M \n @LCL \n M=D \n @endFrame \n A=M \n 0;JMP \n"
+
+def writeCall(commands,line_num=""):
+    comment = f"//{commands}\n"
+    returnAddress = f"{commands[1]}.return.{line_num}"
+    nArgs = commands[2]
+    return comment + f"@{returnAddress} \n D=A \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n @LCL \n D=M \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n @ARG \n D=M \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n @THIS \n D=M \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n @THAT \n D=M \n @SP \n A=M \n M=D \n @SP \n M=M+1 \n @5 \n D=A \n @{nArgs} \n D=D+A \n @SP \n D=M-D \n @ARG \n M=D \n @SP \n D=M  \n @LCL \n M=D \n @{commands[1]}\n  0;JMP\n ({returnAddress}) \n"
 
 def end_loop():
     return "(END) \n@END \n0;JMP "
