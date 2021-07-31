@@ -3,8 +3,8 @@
  D=A
  @SP
  M=D
-//['call', 'Sys.init', '0']
-@Sys.init.return. 
+ //call Sys.init 0
+@Sys.init.return.boot 
  D=A 
  @SP 
  A=M 
@@ -53,10 +53,10 @@
  M=D 
  @Sys.init
   0;JMP
- (Sys.init.return.) 
-//['function', 'Sys.init', '0']
+ (Sys.init.return.boot) 
+//function Sys.init 0
 (Sys.init)
- // ['push', 'constant', '4000']
+ //push constant 4000
 @4000 
 D=A 
 @SP 
@@ -64,14 +64,14 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['pop', 'pointer', '0']
+//pop pointer 0
 @SP
  M=M-1
  A=M
  D=M
  @THIS
  M=D
-// ['push', 'constant', '5000']
+//push constant 5000
 @5000 
 D=A 
 @SP 
@@ -79,14 +79,14 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['pop', 'pointer', '1']
+//pop pointer 1
 @SP
  M=M-1
  A=M
  D=M
  @THAT
  M=D
-//['call', 'Sys.main', '0']
+//call Sys.main 0
 @Sys.main.return.5 
  D=A 
  @SP 
@@ -137,19 +137,27 @@ M=M+1
  @Sys.main
   0;JMP
  (Sys.main.return.5) 
-// ['pop', 'temp', '1']
+//pop temp 1
 @SP
  M=M-1
  A=M
  D=M
  @6
  M=D
+//label LOOP
 (LOOP)
+//goto LOOP
 @LOOP
  0;JMP
-//['function', 'Sys.main', '5']
+//function Sys.main 5
 (Sys.main)
- // ['push', 'constant', '0']
+ @0 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
 @0 
 D=A 
 @SP 
@@ -157,7 +165,6 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['push', 'constant', '0']
 @0 
 D=A 
 @SP 
@@ -165,7 +172,6 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['push', 'constant', '0']
 @0 
 D=A 
 @SP 
@@ -173,7 +179,6 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['push', 'constant', '0']
 @0 
 D=A 
 @SP 
@@ -181,15 +186,7 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['push', 'constant', '0']
-@0 
-D=A 
-@SP 
-A=M 
-M=D 
-@SP 
-M=M+1
-// ['push', 'constant', '4001']
+//push constant 4001
 @4001 
 D=A 
 @SP 
@@ -197,14 +194,14 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['pop', 'pointer', '0']
+//pop pointer 0
 @SP
  M=M-1
  A=M
  D=M
  @THIS
  M=D
-// ['push', 'constant', '5001']
+//push constant 5001
 @5001 
 D=A 
 @SP 
@@ -212,14 +209,14 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['pop', 'pointer', '1']
+//pop pointer 1
 @SP
  M=M-1
  A=M
  D=M
  @THAT
  M=D
-// ['push', 'constant', '200']
+//push constant 200
 @200 
 D=A 
 @SP 
@@ -227,7 +224,7 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['pop', 'local', '1']
+//pop local 1
 @1
  D=A
  @LCL
@@ -241,7 +238,7 @@ M=M+1
  @R13
  A=M
  M=D
-// ['push', 'constant', '40']
+//push constant 40
 @40 
 D=A 
 @SP 
@@ -249,7 +246,7 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['pop', 'local', '2']
+//pop local 2
 @2
  D=A
  @LCL
@@ -263,7 +260,7 @@ M=M+1
  @R13
  A=M
  M=D
-// ['push', 'constant', '6']
+//push constant 6
 @6 
 D=A 
 @SP 
@@ -271,7 +268,7 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['pop', 'local', '3']
+//pop local 3
 @3
  D=A
  @LCL
@@ -285,7 +282,7 @@ M=M+1
  @R13
  A=M
  M=D
-// ['push', 'constant', '123']
+//push constant 123
 @123 
 D=A 
 @SP 
@@ -293,7 +290,7 @@ A=M
 M=D 
 @SP 
 M=M+1
-//['call', 'Sys.add12', '1']
+//call Sys.add12 1
 @Sys.add12.return.21 
  D=A 
  @SP 
@@ -344,14 +341,14 @@ M=M+1
  @Sys.add12
   0;JMP
  (Sys.add12.return.21) 
-// ['pop', 'temp', '0']
+//pop temp 0
 @SP
  M=M-1
  A=M
  D=M
  @5
  M=D
-// ['push', 'local', '0']
+//push local 0
 @0
  D=A
  @LCL
@@ -362,7 +359,7 @@ M=M+1
  M=D
  @SP
  M=M+1
-// ['push', 'local', '1']
+//push local 1
 @1
  D=A
  @LCL
@@ -373,7 +370,7 @@ M=M+1
  M=D
  @SP
  M=M+1
-// ['push', 'local', '2']
+//push local 2
 @2
  D=A
  @LCL
@@ -384,7 +381,7 @@ M=M+1
  M=D
  @SP
  M=M+1
-// ['push', 'local', '3']
+//push local 3
 @3
  D=A
  @LCL
@@ -395,7 +392,7 @@ M=M+1
  M=D
  @SP
  M=M+1
-// ['push', 'local', '4']
+//push local 4
 @4
  D=A
  @LCL
@@ -497,9 +494,9 @@ D=A
  @retAddr 
  A=M 
  0;JMP 
-//['function', 'Sys.add12', '0']
+//function Sys.add12 0
 (Sys.add12)
- // ['push', 'constant', '4002']
+ //push constant 4002
 @4002 
 D=A 
 @SP 
@@ -507,14 +504,14 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['pop', 'pointer', '0']
+//pop pointer 0
 @SP
  M=M-1
  A=M
  D=M
  @THIS
  M=D
-// ['push', 'constant', '5002']
+//push constant 5002
 @5002 
 D=A 
 @SP 
@@ -522,14 +519,14 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['pop', 'pointer', '1']
+//pop pointer 1
 @SP
  M=M-1
  A=M
  D=M
  @THAT
  M=D
-// ['push', 'argument', '0']
+//push argument 0
 @0
  D=A
  @ARG
@@ -540,7 +537,7 @@ M=M+1
  M=D
  @SP
  M=M+1
-// ['push', 'constant', '12']
+//push constant 12
 @12 
 D=A 
 @SP 

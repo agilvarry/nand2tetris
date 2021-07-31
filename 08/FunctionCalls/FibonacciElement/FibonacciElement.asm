@@ -3,8 +3,8 @@
  D=A
  @SP
  M=D
-//['call', 'Sys.init', '0']
-@Sys.init.return. 
+ //call Sys.init 0
+@Sys.init.return.boot 
  D=A 
  @SP 
  A=M 
@@ -53,10 +53,10 @@
  M=D 
  @Sys.init
   0;JMP
- (Sys.init.return.) 
-//['function', 'Main.fibonacci', '0']
+ (Sys.init.return.boot) 
+//function Main.fibonacci 0
 (Main.fibonacci)
- // ['push', 'argument', '0']
+ //push argument 0
 @0
  D=A
  @ARG
@@ -67,7 +67,7 @@
  M=D
  @SP
  M=M+1
-// ['push', 'constant', '2']
+//push constant 2
 @2 
 D=A 
 @SP 
@@ -103,16 +103,19 @@ M=M+1
  (CONT3)
  @SP
  M=M-1
+//if-goto IF_TRUE
 @SP
  M=M-1
  A=M
  D=M
  @IF_TRUE
- D;JGT
+ D;JNE
+//goto IF_FALSE
 @IF_FALSE
  0;JMP
+//label IF_TRUE
 (IF_TRUE)
-// ['push', 'argument', '0']
+//push argument 0
 @0
  D=A
  @ARG
@@ -129,57 +132,58 @@ M=M+1
  @endFrame 
  M=D 
  @5 
- D=D-A 
+  D=A 
+  @endFrame 
+ A=M-D 
+ D=M 
  @retAddr 
-  M=D 
-  @SP
+ M=D 
+ @SP
  M=M-1 
+ @SP
  A=M 
  D=M 
  @ARG 
  A=M 
  M=D 
-  @ARG 
+ @ARG 
  D=M+1 
  @SP 
  M=D 
- @endFrame 
- D=M 
  @1 
- D=D-A
- A=D
+D=A
+ @endFrame
+ A=M-D
  D=M 
  @THAT 
  M=D 
- @endFrame 
- D=M 
  @2 
- D=D-A 
- A=D
+ D=A
+ @endFrame
+ A=M-D
  D=M 
  @THIS 
  M=D 
- @endFrame 
- D=M 
  @3 
- D=D-A 
- A=D
+ D=A
+ @endFrame
+ A=M-D
  D=M 
  @ARG 
  M=D 
- @endFrame 
- D=M 
  @4 
- D=D-A 
- A=D
+ D=A
+ @endFrame
+ A=M-D
  D=M 
  @LCL 
  M=D 
- @endFrame 
+ @retAddr 
  A=M 
  0;JMP 
+//label IF_FALSE
 (IF_FALSE)
-// ['push', 'argument', '0']
+//push argument 0
 @0
  D=A
  @ARG
@@ -190,7 +194,7 @@ M=M+1
  M=D
  @SP
  M=M+1
-// ['push', 'constant', '2']
+//push constant 2
 @2 
 D=A 
 @SP 
@@ -207,7 +211,7 @@ A=A-1
 M=M-D 
 @SP 
 M=M-1
-//['call', 'Main.fibonacci', '1']
+//call Main.fibonacci 1
 @Main.fibonacci.return.13 
  D=A 
  @SP 
@@ -258,7 +262,7 @@ M=M-1
  @Main.fibonacci
   0;JMP
  (Main.fibonacci.return.13) 
-// ['push', 'argument', '0']
+//push argument 0
 @0
  D=A
  @ARG
@@ -269,7 +273,7 @@ M=M-1
  M=D
  @SP
  M=M+1
-// ['push', 'constant', '1']
+//push constant 1
 @1 
 D=A 
 @SP 
@@ -286,7 +290,7 @@ A=A-1
 M=M-D 
 @SP 
 M=M-1
-//['call', 'Main.fibonacci', '1']
+//call Main.fibonacci 1
 @Main.fibonacci.return.17 
  D=A 
  @SP 
@@ -352,60 +356,60 @@ M=M-1
  @endFrame 
  M=D 
  @5 
- D=D-A 
+  D=A 
+  @endFrame 
+ A=M-D 
+ D=M 
  @retAddr 
-  M=D 
-  @SP
+ M=D 
+ @SP
  M=M-1 
+ @SP
  A=M 
  D=M 
  @ARG 
  A=M 
  M=D 
-  @ARG 
+ @ARG 
  D=M+1 
  @SP 
  M=D 
- @endFrame 
- D=M 
  @1 
- D=D-A
- A=D
+D=A
+ @endFrame
+ A=M-D
  D=M 
  @THAT 
  M=D 
- @endFrame 
- D=M 
  @2 
- D=D-A 
- A=D
+ D=A
+ @endFrame
+ A=M-D
  D=M 
  @THIS 
  M=D 
- @endFrame 
- D=M 
  @3 
- D=D-A 
- A=D
+ D=A
+ @endFrame
+ A=M-D
  D=M 
  @ARG 
  M=D 
- @endFrame 
- D=M 
  @4 
- D=D-A 
- A=D
+ D=A
+ @endFrame
+ A=M-D
  D=M 
  @LCL 
  M=D 
- @endFrame 
+ @retAddr 
  A=M 
  0;JMP 
 (END) 
 @END 
-0;JMP //['function', 'Sys.init', '0']
+0;JMP //function Sys.init 0
 (Sys.init)
- // ['push', 'constant', '4']
+ //push constant 4
 @4 
 D=A 
 @SP 
@@ -413,7 +417,7 @@ A=M
 M=D 
 @SP 
 M=M+1
-//['call', 'Main.fibonacci', '1']
+//call Main.fibonacci 1
 @Main.fibonacci.return.2 
  D=A 
  @SP 
@@ -464,7 +468,9 @@ M=M+1
  @Main.fibonacci
   0;JMP
  (Main.fibonacci.return.2) 
+//label WHILE
 (WHILE)
+//goto WHILE
 @WHILE
  0;JMP
 (END) 

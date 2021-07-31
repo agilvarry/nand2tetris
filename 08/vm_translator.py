@@ -6,8 +6,9 @@ def main(vm,file_name):
     line_num = 0
     asm = ''
     vm_lines = vm_parser.strip(vm) #strip comments and whitespace
-
+    
     for line in vm_lines:
+        asm = asm + f"//{line}\n"
         commands = line.split() #separate commands, remove whitespace
         if commands[0] == 'return':
             asm = asm + code_writer.writeReturn(commands[0])
@@ -30,9 +31,9 @@ def main(vm,file_name):
     return asm + code_writer.end_loop()
 
 if __name__ == "__main__":
-    in_folder = r'C:\Users\agilvarry\Documents\github\nand2tetris\08\FunctionCalls\NestedCall'
+    in_folder = r'C:\Users\agilvarry\Documents\github\nand2tetris\08\FunctionCalls\SimpleFunction'
     comment = '//Bootstrap code\n'
-    final_asm = comment + "@256\n D=A\n @SP\n M=D\n" + code_writer.writeCall(['call', 'Sys.init','0'])
+    final_asm = comment + "@256\n D=A\n @SP\n M=D\n //call Sys.init 0\n" + code_writer.writeCall(['call', 'Sys.init','0'],"boot")
 
     for root, dirs, files in os.walk(in_folder):
         # select file name

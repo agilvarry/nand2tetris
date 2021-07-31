@@ -1,7 +1,68 @@
 //Bootstrap code
-//['function', 'SimpleFunction.test', '2']
+@256
+ D=A
+ @SP
+ M=D
+ //call Sys.init 0
+@Sys.init.return.boot 
+ D=A 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @LCL 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @ARG 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @THIS 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @THAT 
+ D=M 
+ @SP 
+ A=M 
+ M=D 
+ @SP 
+ M=M+1 
+ @5 
+ D=A 
+ @0 
+ D=D+A 
+ @SP 
+ D=M-D 
+ @ARG 
+ M=D 
+ @SP 
+ D=M  
+ @LCL 
+ M=D 
+ @Sys.init
+  0;JMP
+ (Sys.init.return.boot) 
+//function SimpleFunction.test 2
 (SimpleFunction.test)
- // ['push', 'constant', '0']
+ @0 
+D=A 
+@SP 
+A=M 
+M=D 
+@SP 
+M=M+1
 @0 
 D=A 
 @SP 
@@ -9,15 +70,7 @@ A=M
 M=D 
 @SP 
 M=M+1
-// ['push', 'constant', '0']
-@0 
-D=A 
-@SP 
-A=M 
-M=D 
-@SP 
-M=M+1
-// ['push', 'local', '0']
+//push local 0
 @0
  D=A
  @LCL
@@ -28,7 +81,7 @@ M=M+1
  M=D
  @SP
  M=M+1
-// ['push', 'local', '1']
+//push local 1
 @1
  D=A
  @LCL
@@ -53,7 +106,7 @@ M=M-1
 A=M 
 A=A-1 
 M=!M 
-// ['push', 'argument', '0']
+//push argument 0
 @0
  D=A
  @ARG
@@ -73,7 +126,7 @@ A=A-1
 M=M+D 
 @SP 
 M=M-1
-// ['push', 'argument', '1']
+//push argument 1
 @1
  D=A
  @ARG
@@ -99,53 +152,53 @@ M=M-1
  @endFrame 
  M=D 
  @5 
- D=D-A 
+  D=A 
+  @endFrame 
+ A=M-D 
+ D=M 
  @retAddr 
-  M=D 
-  @SP
+ M=D 
+ @SP
  M=M-1 
+ @SP
  A=M 
  D=M 
  @ARG 
  A=M 
  M=D 
-  @ARG 
+ @ARG 
  D=M+1 
  @SP 
  M=D 
- @endFrame 
- D=M 
  @1 
- D=D-A
- A=D
+D=A
+ @endFrame
+ A=M-D
  D=M 
  @THAT 
  M=D 
- @endFrame 
- D=M 
  @2 
- D=D-A 
- A=D
+ D=A
+ @endFrame
+ A=M-D
  D=M 
  @THIS 
  M=D 
- @endFrame 
- D=M 
  @3 
- D=D-A 
- A=D
+ D=A
+ @endFrame
+ A=M-D
  D=M 
  @ARG 
  M=D 
- @endFrame 
- D=M 
  @4 
- D=D-A 
- A=D
+ D=A
+ @endFrame
+ A=M-D
  D=M 
  @LCL 
  M=D 
- @endFrame 
+ @retAddr 
  A=M 
  0;JMP 
 (END) 
