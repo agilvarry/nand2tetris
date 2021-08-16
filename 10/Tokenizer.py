@@ -29,7 +29,7 @@ def tokenize(in_jack):
         elif token_type == "Integer":
             tokens = tokens + f"<integerConstant> {token} </integerConstant>\n"
             token_type, token = "",""
-        elif item.isalnum() or item == "_": #here no elif because if we wrap up integer that means current token still needs adding, unlike ending a string
+        elif item.isalnum() or item == "_": 
             token = token + item
             token_type = "Identifier"
         elif token_type == "Identifier":

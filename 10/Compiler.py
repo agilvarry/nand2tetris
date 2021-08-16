@@ -14,7 +14,9 @@ if __name__ == "__main__":
                 # check the extension of files
                 if file.endswith('.jack'):
                     file_name = file.split(".")[0] #this gets the name of the file minus .jack 
-                    file_in = open(in_folder + "\\"+ file, "r")
+                    file_in = open(f"{in_folder}\\{file}", "r")
                     tokenized_jack = Tokenizer.tokenize(file_in)
-                    out = open(out_folder +"\\"+ file_name+'T'+".xml", "w")
-                    out.write(tokenized_jack)    
+                    tokenizer_out = open(f"{out_folder}\\{file_name}T.xml", "w") #xml file to write
+                    tokenizer_out.write(tokenized_jack)    
+                    compilation_in = open(f"{out_folder}\\{file_name}T.xml", "r")
+                    compilation_out=open(f"{out_folder}\\{file_name}.xml", "w")
