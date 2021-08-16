@@ -1,4 +1,4 @@
-symbols = ['{', '}', '(', ')', '[', ']', '. ', ', ', '; ',
+symbols = ['{', '}', '(', ')', '[', ']', '.', ', ', ';', '|',
            '+', '-', '*', '/', '&', ',', '<', '>', '=', '~']
 keywords = ['class', 'constructor', 'function',
             'method', 'field', 'static', 'var', 'int',
@@ -8,45 +8,47 @@ keywords = ['class', 'constructor', 'function',
 
 def tokenize(in_jack):
     stripped_jack = strip(in_jack)
-    tokens = '<tokens> \n'
-    for line in stripped_jack:
-        tokens = tokens + parse_tokens(line)
-    tokens = tokens + '</tokens>'
-    return tokens
-
-def parse_tokens(line):
-    tokens = ""
+    tokens = '<tokens>\n'
     token = ""
     token_type = ""
-    for item in line:
-        # if token_type == "Identifier" and not item.isalnum() and item != "_" and token in keywords:
-        #     tokens = tokens + '<keyword> {token} </keyword>\n'
-        #     token_type, token = ""
+
+    for item in stripped_jack:
+        if token_type == "Identifier" and not item.isalnum() and item != "_" and token in keywords:
+            tokens = tokens + f"<keyword> {token} </keyword>\n"
+            token_type, token = "",""
         if item == '"' and token_type != "String":
-            
             token_type = "String"
-            
         elif item == '"' and token_type == "String":
-            print(item)
-            tokens = tokens + "<stringConstant> {token} </stringConstant>\n"
-            token_type, token = ""
+            tokens = tokens + f"<stringConstant> {token} </stringConstant>\n"
+            token_type, token = "",""
         elif token_type == "String":
-            
+            token = token + item 
+        elif item.isnumeric() and token_type != "Identifier":
             token = token + item
-        # elif item in symbols:
-        #     tokens = tokens + f"<symbol>{item}</symbol>\n"
-        # elif item.isnumeric() and token_type != "Identifier":
-        #     token = token + item
-        #     token_type = "Integer"
-        # elif token_type == "Integer":
-        #     tokens = tokens + '<integerConstant> {token} </integerConstant>\n'
-        #     token_type, token = ""
-        # elif item.isalnum() or item == "_":
-        #     token = token + item
-        #     token_type = "Identifier"
-        # elif token_type == "Identifier":
-        #     tokens = tokens + '<identifier> {token} </identifier>\n'
-        #     token_type, token = ""
+            token_type = "Integer"
+        elif token_type == "Integer":
+            tokens = tokens + f"<integerConstant> {token} </integerConstant>\n"
+            token_type, token = "",""
+        elif item.isalnum() or item == "_": #here no elif because if we wrap up integer that means current token still needs adding, unlike ending a string
+            token = token + item
+            token_type = "Identifier"
+        elif token_type == "Identifier":
+            tokens = tokens + f"<identifier> {token} </identifier>\n"
+            token_type, token = "",""
+        sym=""    
+        if item in symbols:
+            if item == '<':
+                sym = '&lt;'
+            elif item == '>':
+                sym = '&gt;'
+            elif item == '&':
+                sym = '&amp;'
+            else:            
+                sym = item
+            tokens = tokens + f"<symbol> {sym} </symbol>\n"   
+            token_type, token= "","" 
+
+    tokens = tokens + '</tokens>'
     return tokens
 
 def strip(jack):
