@@ -9,13 +9,13 @@ class Main {
     static boolean test;    // Added for testing -- there is no static keyword
                             // in the Square files.
 
-    // function void main() {
-        // var SquareGame game;
-        // let game = game;
+    function void main() {
+        var SquareGame game;
+        let game = game;
         // do game.run();
         // do game.dispose();
         // return;
-    // }
+    }
 
     // function void more() {  // Added to test Jack syntax that is not used in
     //     var boolean b;      // the Square files.

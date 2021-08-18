@@ -2,24 +2,7 @@ import xml.etree.ElementTree as ET
 in_expressions = False
 in_statements = False
 
-
-
-def compile_subroutine_dec(out_xml, tokens, depth):
-    return out_xml, tokens, depth
-
-def compile_parameter_list(out_xml, tokens, depth):
-    return out_xml, tokens, depth
-
-def compile_subroutine_body(out_xml, tokens, depth):
-    return out_xml, tokens, depth
-
-def compile_var_dec(out_xml, tokens, depth):
-    return out_xml, tokens, depth
-
 def compile_statements(out_xml, tokens, depth):
-    return out_xml, tokens, depth
-
-def compile_let(out_xml, tokens, depth):
     return out_xml, tokens, depth
 
 def compile_if(out_xml, tokens, depth):
@@ -40,16 +23,94 @@ def compile_term(out_xml, tokens, depth):
 def compile_expression_list(out_xml, tokens, depth):
     return out_xml, tokens, depth 
 
+def compile_let(out_xml, tokens, depth):
+    
+    return out_xml, tokens, depth    
+
+def compile_var_dec(out_xml, tokens, depth):
+    out_xml = out_xml + f"{tabs(depth)}<varDec>\n"
+    depth = depth+1
+    out_xml, tokens = non_terminal_keyword(out_xml, tokens, depth) 
+
+    while tokens[0][1].strip() != ';':
+        out_xml, tokens, depth = token_handler(out_xml, tokens, depth)
+
+    out_xml, tokens, depth = token_handler(out_xml, tokens, depth) 
+    depth = depth-1
+    out_xml = out_xml + f"{tabs(depth)}</varDec>\n"    
+
+    return out_xml, tokens, depth
+
+def compile_subroutine_body(out_xml, tokens, depth):
+    """
+    set first parameterList and call token handler for open bracket
+    iterate through remaining tags until we find closing bracket
+    then wrap up
+    """
+    out_xml = out_xml + f"{tabs(depth)}<subroutineBody>\n"
+    out_xml, tokens, depth = token_handler(out_xml, tokens, depth)  
+    
+    depth = depth+1
+    
+    while tokens[0][1].strip() != '}':
+        out_xml, tokens, depth = token_handler(out_xml, tokens, depth) 
+
+
+    out_xml, tokens, depth = token_handler(out_xml, tokens, depth) 
+    depth = depth-1
+    out_xml = out_xml + f"{tabs(depth)}</subroutineBody>\n"
+    return out_xml, tokens, depth    
+
+def compile_parameter_list(out_xml, tokens, depth):
+    """
+    set first parameterList and call token handler for open paren
+    iterate through remaining tags until we find closing paren,
+    then call param list
+    then call subroutine body
+    then wrap up
+    """
+    out_xml, tokens, depth = token_handler(out_xml, tokens, depth)  
+    out_xml = out_xml + f"{tabs(depth)}<parameterList>\n"
+    depth = depth+1
+    
+    while tokens[0][1].strip() != ')':
+        out_xml, tokens, depth = token_handler(out_xml, tokens, depth) 
+
+    depth = depth-1
+    out_xml = out_xml + f"{tabs(depth)}</parameterList>\n"
+    out_xml, tokens, depth = token_handler(out_xml, tokens, depth) 
+    return out_xml, tokens, depth
+
+def compile_subroutine_dec(out_xml, tokens, depth):
+    """
+    set first subroutineDec and keyword tags, pop first time
+    iterate through remaining tags until we find opening paren,
+    then call param list
+    then call subroutine body
+    then wrap up
+    """
+    out_xml = out_xml + f"{tabs(depth)}<subroutineDec>\n"  
+    depth=depth+1
+    out_xml, tokens = non_terminal_keyword(out_xml, tokens, depth)  
+
+    while tokens[0][1].strip() != '(':
+        out_xml, tokens, depth = token_handler(out_xml, tokens, depth)
+
+    out_xml, tokens, depth = compile_parameter_list(out_xml, tokens, depth) #todo
+    out_xml, tokens, depth = compile_subroutine_body(out_xml, tokens, depth)
+    depth = depth-1
+    out_xml = out_xml + f"{tabs(depth)}</subroutineDec>\n"
+    return out_xml, tokens, depth
+
 def compile_class_var_dec(out_xml, tokens, depth):
     """
-    set first class and keyword tags, pop first time
-    iterate through remaining tags until we find closing braket
+    set first classVarDec and keyword tags, pop first time
+    iterate through remaining tags until we find semicolon
     then wrap things up
     """
     out_xml = out_xml + f"{tabs(depth)}<classVarDec>\n"  
     depth=depth+1
-    out_xml = out_xml + f"{tabs(depth)}<keyword>{tokens[0][1]}</keyword>\n" 
-    tokens.pop(0)  
+    out_xml, tokens = non_terminal_keyword(out_xml, tokens, depth)
 
     while tokens[0][1].strip() != ';':
         out_xml, tokens, depth = token_handler(out_xml, tokens, depth)
@@ -57,7 +118,6 @@ def compile_class_var_dec(out_xml, tokens, depth):
     out_xml, tokens, depth = token_handler(out_xml, tokens, depth)
     depth=depth-1
     out_xml = out_xml + f"{tabs(depth)}</classVarDec>\n"
-    
     return out_xml, tokens, depth   
 
 def compile_class(out_xml, tokens, depth):
@@ -68,8 +128,7 @@ def compile_class(out_xml, tokens, depth):
     """
     out_xml = out_xml + f"{tabs(depth)}<class>\n"  
     depth=depth+1
-    out_xml = out_xml+ f"{tabs(depth)}<keyword> class </keyword>\n"
-    tokens.pop(0)    
+    out_xml, tokens = non_terminal_keyword(out_xml, tokens, depth) 
 
     while tokens[0][1].strip() != '}':
         out_xml, tokens, depth = token_handler(out_xml, tokens, depth)        
@@ -110,6 +169,13 @@ def token_handler(out_xml, tokens, depth):
 
     return out_xml, tokens, depth
 
+def non_terminal_keyword(out_xml, tokens, depth):
+    current = tokens[0]
+    tag,token = current[0],current[1].strip()
+    
+    out_xml = out_xml + f"{tabs(depth)}<{tag}> {token} </{tag}>\n"   
+    tokens.pop(0) 
+    return out_xml, tokens
 
 def Engine(xml_in):
     root = ET.fromstring(xml_in)
@@ -122,7 +188,7 @@ def Engine(xml_in):
 
     while len(tokens) > 1:
         out_xml, tokens, depth = token_handler(out_xml, tokens, depth)
-      
+    
     return out_xml    
 
 def tabs(depth):
