@@ -8,13 +8,17 @@ class CompilationEngine:
     def compile_statements(self, out_xml, tokens, depth):
         return out_xml, tokens, depth
 
-    def compile_do(self, out_xml, tokens, depth):
-        return out_xml, tokens, depth
-
     def compile_while(self, out_xml, tokens, depth):
         return out_xml, tokens, depth
 
     def compile_term(self, out_xml, tokens, depth):
+        return out_xml, tokens, depth
+
+    def compile_expression_list(self, out_xml, tokens, depth): 
+        out_xml = out_xml + f"{self.tabs(depth)}<expressionList>\n"
+        depth = depth+1 
+        depth = depth-1
+        out_xml = out_xml + f"{self.tabs(depth)}</expressionList>\n"
         return out_xml, tokens, depth
 
     def compile_expression(self, out_xml, tokens, depth):
@@ -85,6 +89,23 @@ class CompilationEngine:
         out_xml = out_xml + f"{self.tabs(depth)}</returnStatement>\n"
         return out_xml, tokens, depth    
 
+    def compile_do(self, out_xml, tokens, depth):
+        out_xml = out_xml + f"{self.tabs(depth)}<doStatement>\n"
+        depth = depth+1
+        out_xml, tokens = self.non_terminal_keyword(out_xml, tokens, depth) #do
+
+        while tokens[0][1].strip() != ';':
+            if tokens[0][1].strip() == '(':
+                out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)
+                out_xml, tokens, depth = self.compile_expression_list(out_xml, tokens, depth)
+            else:
+                out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)    
+
+        out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #;
+        depth = depth-1
+        out_xml = out_xml + f"{self.tabs(depth)}</doStatement>\n"        
+        return out_xml, tokens, depth    
+
     def compile_statements(self, out_xml, tokens, depth):
         """
         check if we're in a statements block or not to initialize or not 
@@ -103,7 +124,8 @@ class CompilationEngine:
                 out_xml, tokens, depth = self.compile_if(out_xml, tokens, depth)
             if token == 'return':
                 out_xml, tokens, depth = self.compile_return(out_xml, tokens, depth)
-
+            if token == 'do':
+                out_xml, tokens, depth = self.compile_do(out_xml, tokens, depth)
 
 
         self.in_statements = False
