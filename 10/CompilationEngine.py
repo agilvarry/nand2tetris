@@ -8,9 +8,6 @@ class CompilationEngine:
     def compile_statements(self, out_xml, tokens, depth):
         return out_xml, tokens, depth
 
-    def compile_if(self, out_xml, tokens, depth):
-        return out_xml, tokens, depth
-
     def compile_do(self, out_xml, tokens, depth):
         return out_xml, tokens, depth
 
@@ -29,7 +26,7 @@ class CompilationEngine:
         out_xml = out_xml + f"{self.tabs(depth)}<term>\n"
         depth = depth+1
 
-        while tokens[0][1].strip() != ';':
+        while tokens[0][1].strip() not in [';', ')']:
             out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)
 
         depth = depth-1
@@ -37,6 +34,33 @@ class CompilationEngine:
         depth = depth-1
         out_xml = out_xml + f"{self.tabs(depth)}</expression>\n"
         return out_xml, tokens, depth 
+
+    def compile_if(self, out_xml, tokens, depth):
+        out_xml = out_xml + f"{self.tabs(depth)}<ifStatement>\n"
+        depth = depth+1
+        out_xml, tokens = self.non_terminal_keyword(out_xml, tokens, depth) #if
+        out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #(
+        out_xml, tokens, depth = self.compile_expression(out_xml, tokens, depth) #expression
+        out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #)
+        out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #{
+        self.in_statements = False #risky flag flipping
+        out_xml, tokens, depth = self.compile_statements(out_xml, tokens, depth) #statement
+        self.in_statements = True #risky flag flipping
+        out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #}
+
+        if tokens[0][1].strip() == "else":
+            out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #else
+            out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #{
+            self.in_statements = False #risky flag flipping
+            out_xml, tokens, depth = self.compile_statements(out_xml, tokens, depth) #statement
+            self.in_statements = True #risky flag flipping
+            out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #}
+
+
+
+        depth = depth-1
+        out_xml = out_xml + f"{self.tabs(depth)}</ifStatement>\n"
+        return out_xml, tokens, depth    
 
     def compile_let(self, out_xml, tokens, depth):
         out_xml = out_xml + f"{self.tabs(depth)}<letStatement>\n"
@@ -69,6 +93,9 @@ class CompilationEngine:
             token = tokens[0][1].strip()
             if token == 'let':
                 out_xml, tokens, depth = self.compile_let(out_xml, tokens, depth)
+            if token == 'if':
+                out_xml, tokens, depth = self.compile_if(out_xml, tokens, depth)
+
 
         self.in_statements = False
         depth = depth-1
