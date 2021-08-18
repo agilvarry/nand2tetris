@@ -1,5 +1,5 @@
 import Tokenizer
-import CompilationEngine
+from CompilationEngine import CompilationEngine
 import os
 
 if __name__ == "__main__":
@@ -20,7 +20,7 @@ if __name__ == "__main__":
                     tokenized_jack = Tokenizer.tokenize(file_in)
                     tokenizer_out = open(f"{out_folder}\\{file_name}T.xml", "w") #xml file to write
                     tokenizer_out.write(tokenized_jack)    
-
-                    compiled_jack=CompilationEngine.Engine(tokenized_jack)
+                    e = CompilationEngine(tokenized_jack)
+                    compiled_jack= e.Engine()
                     compilation_out=open(f"{out_folder}\\{file_name}.xml", "w")
                     compilation_out.write(compiled_jack)
