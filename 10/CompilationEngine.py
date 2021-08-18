@@ -2,8 +2,7 @@ import xml.etree.ElementTree as ET
 in_expressions = False
 in_statements = False
 
-def compile_class_var_dec(out_xml, tokens, depth):
-    return out_xml, tokens, depth
+
 
 def compile_subroutine_dec(out_xml, tokens, depth):
     return out_xml, tokens, depth
@@ -41,14 +40,42 @@ def compile_term(out_xml, tokens, depth):
 def compile_expression_list(out_xml, tokens, depth):
     return out_xml, tokens, depth 
 
-def compile_class(out_xml, tokens, depth):
-    out_xml = out_xml + f"{tabs(depth)}<class>\n"  
+def compile_class_var_dec(out_xml, tokens, depth):
+    """
+    set first class and keyword tags, pop first time
+    iterate through remaining tags until we find closing braket
+    then wrap things up
+    """
+    out_xml = out_xml + f"{tabs(depth)}<classVarDec>\n"  
+    depth=depth+1
+    out_xml = out_xml + f"{tabs(depth)}<keyword>{tokens[0][1]}</keyword>\n" 
+    tokens.pop(0)  
 
-    depth = depth + 1
-    while tokens[0][1] != ' } ':
+    while tokens[0][1].strip() != ';':
         out_xml, tokens, depth = token_handler(out_xml, tokens, depth)
-        tokens.pop(0)
 
+    out_xml, tokens, depth = token_handler(out_xml, tokens, depth)
+    depth=depth-1
+    out_xml = out_xml + f"{tabs(depth)}</classVarDec>\n"
+    
+    return out_xml, tokens, depth   
+
+def compile_class(out_xml, tokens, depth):
+    """
+    set first class and keyword tags, pop first time
+    iterate through remaining tags until we find closing braket
+    then wrap things up
+    """
+    out_xml = out_xml + f"{tabs(depth)}<class>\n"  
+    depth=depth+1
+    out_xml = out_xml+ f"{tabs(depth)}<keyword> class </keyword>\n"
+    tokens.pop(0)    
+
+    while tokens[0][1].strip() != '}':
+        out_xml, tokens, depth = token_handler(out_xml, tokens, depth)        
+
+    out_xml, tokens, depth = token_handler(out_xml, tokens, depth)
+    depth=depth-1
     out_xml = out_xml + f"{tabs(depth)}</class>\n"
     return out_xml, tokens, depth    
 
@@ -73,11 +100,14 @@ non_terminal = {
 }
 def token_handler(out_xml, tokens, depth):
     current = tokens[0]
-    tag,token = current[0],current[1]
+    tag,token = current[0],current[1].strip() #strip white space from around token
+    
     if token in non_terminal:
         out_xml, tokens, depth = non_terminal[token](out_xml, tokens, depth)
     else:
-        out_xml = f"{tabs(depth)}<{tag}>{token}</{tag}>\n"    
+        out_xml = out_xml + f"{tabs(depth)}<{tag}> {token} </{tag}>\n"   
+        tokens.pop(0) 
+
     return out_xml, tokens, depth
 
 
@@ -90,17 +120,17 @@ def Engine(xml_in):
     for child in root:
         tokens.append([child.tag,child.text])
 
-    while len(tokens) > 0:
-        
+    while len(tokens) > 1:
         out_xml, tokens, depth = token_handler(out_xml, tokens, depth)
-        tokens.pop(0)
-    print(out_xml)    
+      
     return out_xml    
 
 def tabs(depth):
+    tabnum = depth
     tab = ""
-    while depth > 0:
+    while tabnum > 0:
         tab = tab + "  "  
+        tabnum = tabnum-1
     return tab              
 
    
