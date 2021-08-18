@@ -13,7 +13,7 @@ class Main {
         let game = game;
         // do game.run();
         // do game.dispose();
-        // return;
+        return;
     }
 
     function void more() {  // Added to test Jack syntax that is not used in
@@ -22,6 +22,6 @@ class Main {
         }
         else {              // There is no else keyword in the Square files.
         }
-    //     return;
+        return;
     }
 }
