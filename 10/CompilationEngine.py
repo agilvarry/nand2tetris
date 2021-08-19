@@ -38,10 +38,9 @@ class CompilationEngine:
         depth = depth-1
         out_xml = out_xml + f"{self.tabs(depth)}</expression>\n"
         return out_xml, tokens, depth    
-    def compile_while(self, out_xml, tokens, depth):
-        out_xml = out_xml + f"{self.tabs(depth)}<whileStatement>\n"
-        depth = depth+1
-        out_xml, tokens = self.non_terminal_keyword(out_xml, tokens, depth) #if
+
+    def if_while_help(self, out_xml, tokens, depth):
+        out_xml, tokens = self.non_terminal_keyword(out_xml, tokens, depth) #if/while
         out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #(
         out_xml, tokens, depth = self.compile_expression(out_xml, tokens, depth) #expression
         out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #)
@@ -50,6 +49,12 @@ class CompilationEngine:
         out_xml, tokens, depth = self.compile_statements(out_xml, tokens, depth) #statement
         self.in_statements = True #risky flag flipping
         out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #}
+        return out_xml, tokens, depth
+        
+    def compile_while(self, out_xml, tokens, depth):
+        out_xml = out_xml + f"{self.tabs(depth)}<whileStatement>\n"
+        depth = depth+1
+        out_xml, tokens, depth = self.if_while_help(out_xml, tokens, depth)
         depth = depth-1
         out_xml = out_xml + f"{self.tabs(depth)}</whileStatement>\n"
         return out_xml, tokens, depth
@@ -58,16 +63,7 @@ class CompilationEngine:
     def compile_if(self, out_xml, tokens, depth):
         out_xml = out_xml + f"{self.tabs(depth)}<ifStatement>\n"
         depth = depth+1
-        out_xml, tokens = self.non_terminal_keyword(out_xml, tokens, depth) #if
-        out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #(
-        out_xml, tokens, depth = self.compile_expression(out_xml, tokens, depth) #expression
-        out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #)
-        out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #{
-        self.in_statements = False #risky flag flipping
-        out_xml, tokens, depth = self.compile_statements(out_xml, tokens, depth) #statement
-        self.in_statements = True #risky flag flipping
-        out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #}
-
+        out_xml, tokens, depth = self.if_while_help(out_xml, tokens, depth)
         if tokens[0][1].strip() == "else":
             out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #else
             out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #{
@@ -263,20 +259,20 @@ class CompilationEngine:
         out_xml = out_xml + f"{self.tabs(depth)}</class>\n"
         return out_xml, tokens, depth    
 
-    non_terminal = {
-        'class': compile_class,
-        'static': compile_class_var_dec,
-        'field': compile_class_var_dec,
-        'constructor': compile_subroutine_dec,
-        'function': compile_subroutine_dec,
-        'method': compile_subroutine_dec,
-        'var': compile_var_dec,
-        'let': compile_statements,
-        'if': compile_statements,
-        'while': compile_statements,
-        'return': compile_statements,
-        'do': compile_statements
-    }
+    non_terminal = [
+        'class',
+        'static',
+        'field',
+        'constructor',
+        'function',
+        'method',
+        'var',
+        'let',
+        'if',
+        'while',
+        'return',
+        'do'
+    ]
     statements_list ={
         'let': compile_let, #may need special handling for statements
         'if': compile_if,
@@ -311,7 +307,7 @@ class CompilationEngine:
         current = tokens[0]
         tag,token = current[0],current[1].strip()
         
-        out_xml = out_xml + f"{self.tabs(depth)}<{tag}> {token} </{tag}>\n"   
+        out_xml = out_xml + f"{self.tabs(depth)}<{tag}>{current[1]}</{tag}>\n"   
         tokens.pop(0) 
         return out_xml, tokens
 
