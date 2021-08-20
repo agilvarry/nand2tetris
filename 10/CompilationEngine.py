@@ -1,7 +1,6 @@
 import xml.etree.ElementTree as ET
 class CompilationEngine:
     def __init__(self, xml_in):
-        self.in_expressions = False
         self.in_statements = False
         self.xml_in = xml_in
 
@@ -22,36 +21,35 @@ class CompilationEngine:
         out_xml = out_xml + f"{self.tabs(depth)}<term>\n"
         depth = depth+1
         # 
-        if(tokens[0][0] in ('integerConstant', 'stringConstant', 'keyword')):
-            
+        if tokens[0][1].strip() == '(':
+            out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #[,()                
+            out_xml, tokens, depth = self.compile_expression(out_xml, tokens, depth)                
+            out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #],) 
+        elif(tokens[0][0] in ('integerConstant', 'stringConstant', 'keyword')):
             out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)
-            
-
         elif(tokens[0][0] == 'identifier'):
             out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)#identifier            
             if(tokens[0][1].strip() in ['[','(']):
                 out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #[,()                
                 out_xml, tokens, depth = self.compile_expression(out_xml, tokens, depth)                
                 out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #],)                
-
             elif(tokens[0][1].strip() == '.'):
                 out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #'.'                
                 out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)#identifier                
                 out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #'('                
                 out_xml, tokens, depth = self.compile_expression_list(out_xml, tokens, depth)                
                 out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #')'                
-
-
-            else:
-                while tokens[0][1].strip() not in [';', ')']:
-                    
-                    if tokens[0][1].strip() == '(':
-                        out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)#()
-                        out_xml, tokens, depth = self.compile_expression_list(out_xml, tokens, depth)
-                        out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #)
-                    else:
-                        out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)   
-            
+            elif tokens[0][1].strip() == '(':
+                out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)#(
+                out_xml, tokens, depth = self.compile_expression_list(out_xml, tokens, depth)
+                out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #)
+        elif tokens[0][1].strip() in ['+','-','*','/','&','|','<','>','=']:
+            out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)
+            out_xml, tokens, depth  = self.compile_term(out_xml, tokens, depth)
+        else:
+        #     print(tokens[0])
+            while tokens[0][1].strip() != ';':             
+                out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)   
         depth = depth-1
         out_xml = out_xml + f"{self.tabs(depth)}</term>\n"
         return out_xml, tokens, depth    
@@ -59,14 +57,15 @@ class CompilationEngine:
     def compile_expression(self, out_xml, tokens, depth):
         out_xml = out_xml + f"{self.tabs(depth)}<expression>\n"
         depth = depth+1
-        
         while tokens[0][1].strip() not in [';', ')', ',', ']']:
-            # 
-            if(tokens[0][1].strip() in ['+','-','*','/','&','|','<','>','=']):
+            print(tokens[0], tokens[1])
+            if tokens[1][1].strip() in ['+','-','*','/','&','|','<','>','=']:
+                out_xml, tokens, depth  = self.compile_term(out_xml, tokens, depth)
                 out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)
-            out_xml, tokens, depth  = self.compile_term(out_xml, tokens, depth)
-           
-
+            elif(tokens[0][1].strip() in ['+','-','*','/','&','|','<','>','=']):
+                out_xml, tokens, depth  = self.token_handler(out_xml, tokens, depth)
+            else:
+                out_xml, tokens, depth  = self.compile_term(out_xml, tokens, depth)
         
         depth = depth-1
         out_xml = out_xml + f"{self.tabs(depth)}</expression>\n"
@@ -113,16 +112,15 @@ class CompilationEngine:
         out_xml = out_xml + f"{self.tabs(depth)}<letStatement>\n"
         depth = depth+1
         out_xml, tokens = self.non_terminal_keyword(out_xml, tokens, depth) #let
-        if(tokens[1][1] == '['):
+
+        if(tokens[1][1].strip() == '['):
+            out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #varName
             out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)#[
             out_xml, tokens, depth = self.compile_expression(out_xml, tokens, depth)
             out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)#]
         else:
             out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #varName
             
-            
-            
-        print(tokens[0])
         out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth)#=
         out_xml, tokens, depth = self.compile_expression(out_xml, tokens, depth) #expression
         out_xml, tokens, depth = self.token_handler(out_xml, tokens, depth) #;
