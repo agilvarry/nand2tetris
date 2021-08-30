@@ -3,10 +3,13 @@ from CompilationEngine import CompilationEngine
 import os
 
 if __name__ == "__main__":
-    in_folder1 =r'C:\Users\agilvarry\Documents\github\nand2tetris\10\Square'
-    in_folder2=r'C:\Users\agilvarry\Documents\github\nand2tetris\10\ArrayTest'
-    in_folder3=r'C:\Users\agilvarry\Documents\github\nand2tetris\10\ExpressionLessSquare'
-    folders = [in_folder1, in_folder3, in_folder2]
+    in_folder1 =r'C:\Users\agilvarry\Documents\github\nand2tetris\11\Seven'
+    in_folder2=r'C:\Users\agilvarry\Documents\github\nand2tetris\11\ConvertToBin'
+    in_folder3=r'C:\Users\agilvarry\Documents\github\nand2tetris\11\Square'
+    in_folder4 = r"C:\Users\agilvarry\Documents\github\nand2tetris\11\Average"
+    in_folder5 = r"C:\Users\agilvarry\Documents\github\nand2tetris\11\Pong"
+    in_folder6 = r"C:\Users\agilvarry\Documents\github\nand2tetris\11\ComplexArrays"
+    folders = [in_folder2]
     for in_folder in folders:
         out_folder = in_folder+'\output'
         for root, dirs, files in os.walk(in_folder):
