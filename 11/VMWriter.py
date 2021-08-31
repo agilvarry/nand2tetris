@@ -23,4 +23,4 @@ def write_function(name, n_vars):
     return
 
 def write_return():
-    
+    return

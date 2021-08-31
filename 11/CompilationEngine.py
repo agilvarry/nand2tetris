@@ -310,18 +310,17 @@ class CompilationEngine:
         iterate through remaining tags until we find closing braket
         then wrap things up
         """
-        
-        # out_vm = out_vm + f"{self.tabs(depth)}<class>\n"
-  
-        out_vm, tokens = self.non_terminal_keyword(out_vm, tokens) 
+        tokens.pop(0) #remove class keyword
         self.class_name = tokens[0][1].strip()
+        tokens.pop(0) #remove class name identifier
+        tokens.pop(0) #remove opening bracket
 
+        #go into loop through rest of class
         while tokens[0][1].strip() != '}':
             out_vm, tokens = self.token_handler(out_vm, tokens)        
 
-        out_vm, tokens = self.token_handler(out_vm, tokens)
-      
-        # out_vm = out_vm + f"{self.tabs(depth)}</class>\n"
+        tokens.pop(0) #remove closing braket
+        
         
         return out_vm, tokens    
 
