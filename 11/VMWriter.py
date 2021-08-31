@@ -1,5 +1,5 @@
 def write_push(segment, index):
-    return
+    return f"push {segment} {index}\n"
 
 def write_pop(segment, index):
     return
@@ -17,10 +17,10 @@ def write_if(label):
     return
 
 def write_call(name, n_args):
-    return
+    return f"call {name} {n_args}\n"
 
 def write_function(name, n_vars):
-    return
+    return f"function {name} {n_vars}\n"
 
 def write_return():
-    return
+    return "push constant 0\nreturn"

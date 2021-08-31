@@ -1,5 +1,42 @@
 import xml.etree.ElementTree as ET
 from SymbolTable import SymbolTable
+import VMWriter
+
+math_functions = {
+    "multiply": 2,
+    "divide": 2,
+    "min": 2,
+    "max": 2,
+    "sqrt": 1
+}
+string_functions = {}
+array_functions = {}
+output_functions = {
+    "moveCursor": 2,
+    "printChar": 1,
+    "printString": 1,
+    "printInt": 1,
+    "printLn": 0,
+    "backSpace": 0
+}
+screen_functions = {}
+keyboard_functions = {}
+memory_functions = {}
+sys_functions = {}
+os_classes = {
+    "Math":  math_functions,
+    "String": string_functions,
+    "Array": array_functions,
+    "Output": output_functions,
+    "Screen": screen_functions,
+    "Keyboard": keyboard_functions,
+    "Memory": memory_functions,
+    "Sys": sys_functions 
+}
+math_ops = {
+    "+": "add\n",
+    "*": "call Math.multiply 2\n"
+}
 class CompilationEngine:
     def __init__(self, xml_in):
         self.in_statements = False
@@ -9,29 +46,25 @@ class CompilationEngine:
         self.class_name = ""
 
     def compile_expression_list(self, out_vm, tokens): 
-        # out_vm = out_vm + f"{self.tabs(depth)}<expressionList>\n"
         
-
         while tokens[0][1].strip() not in [';', ')']:
             out_vm, tokens = self.compile_expression(out_vm, tokens)
             if tokens[0][1].strip() == ',':
-                out_vm, tokens = self.token_handler(out_vm, tokens) #,
+                tokens.pop(0) #pop ,
 
-      
-        # out_vm = out_vm + f"{self.tabs(depth)}</expressionList>\n"
         return out_vm, tokens
 
     def compile_term(self, out_vm, tokens):
-        # out_vm = out_vm + f"{self.tabs(depth)}<term>\n"
        
         if tokens[0][1].strip() == '(':
             self.nested_expression = True
-            out_vm, tokens = self.token_handler(out_vm, tokens)   # [,()
+            tokens.pop(0) # pop [,()
             out_vm, tokens = self.compile_expression(out_vm, tokens)
-            out_vm, tokens = self.token_handler(out_vm, tokens)   # ],)
+            tokens.pop(0) # pop ],)
             self.nested_expression = False
         elif tokens[0][0] in ('integerConstant', 'stringConstant', 'keyword'):
-            out_vm, tokens = self.token_handler(out_vm, tokens)
+            out_vm = out_vm + VMWriter.write_push("constant", tokens[0][1].strip()) #i suspect this is only valid for ints
+            tokens.pop(0)
         elif tokens[0][0] == 'identifier':
             out_vm, tokens = self.token_handler(out_vm, tokens)  # identifier
             if tokens[0][1].strip() in ['[', '(']:
@@ -56,25 +89,31 @@ class CompilationEngine:
             while tokens[0][1].strip() != ';':          
                 out_vm, tokens = self.token_handler(out_vm, tokens)   
  
-        # out_vm = out_vm + f"{self.tabs(depth)}</term>\n"
         return out_vm, tokens    
+
 
     def compile_expression(self, out_vm, tokens):
         terms = ['identifier', 'integerConstant', 'stringConstant']
-        # out_vm = out_vm + f"{self.tabs(depth)}<expression>\n"
+        op_list= []
         
         while tokens[0][1].strip() not in [';', ')', ',', ']']:
+            
             if tokens[0][0] == 'identifier' and tokens[1][1].strip() in ['+', '-', '*', '/', '&', '|', '<', '>', '=']:
-                out_vm, tokens = self.compile_term(out_vm, tokens)
-                out_vm, tokens = self.token_handler(out_vm, tokens)
+                out_vm, tokens = self.compile_term(out_vm, tokens) #TODO iffy about this
+                op_list.insert(0,tokens[0][1].strip()) #add operator to list
+                tokens.pop(0) #pop operator
             elif tokens[0][1].strip() in ['-', '~'] and tokens[1][0] in terms and self.nested_expression is True:
-                out_vm, tokens = self.compile_term(out_vm, tokens)
+                op_list.insert(0,tokens[0][1].strip()) #add operator to list
+                tokens.pop(0) #pop operator
             elif tokens[0][1].strip() in ['+', '-', '*', '/', '&', '|', '<', '>', '=']:
-                out_vm, tokens = self.token_handler(out_vm, tokens)
+                op_list.insert(0,tokens[0][1].strip()) #add operator to list
+                tokens.pop(0) #pop operator
             else:
                 out_vm, tokens = self.compile_term(out_vm, tokens)
-        
-        # out_vm = out_vm + f"{self.tabs(depth)}</expression>\n"
+
+        for op in op_list:
+            out_vm = out_vm + math_ops[op]
+
         return out_vm, tokens    
 
     def if_while_help(self, out_vm, tokens):
@@ -134,33 +173,41 @@ class CompilationEngine:
        
         return out_vm, tokens    
 
-    def compile_return(self, out_vm, tokens):
-        # out_vm = out_vm + f"{self.tabs(depth)}<returnStatement>\n"
-       
-        out_vm, tokens = self.non_terminal_keyword(out_vm, tokens)  # return
+    def compile_return(self, out_vm, tokens):       
+        tokens.pop(0)  # pop return
 
         while tokens[0][1].strip() != ';':
             out_vm, tokens = self.compile_expression(out_vm, tokens) 
 
-        out_vm, tokens = self.token_handler(out_vm, tokens)  # ;
-     
-        # out_vm = out_vm + f"{self.tabs(depth)}</returnStatement>\n"
+        tokens.pop(0)  # ;
+        out_vm = out_vm + VMWriter.write_return()
         return out_vm, tokens    
 
     def compile_do(self, out_vm, tokens):
-        # out_vm = out_vm + f"{self.tabs(depth)}<doStatement>\n"
-      
-        out_vm, tokens = self.non_terminal_keyword(out_vm, tokens)  # do
+        """
+        get Method call info, call expression list
+        """
+        tokens.pop(0) # pop do
+        do_obj = tokens[0][1].strip()
+        tokens.pop(0) # pop obj
+        tokens.pop(0) # pop .
+        do_method = tokens[0][1].strip()
+        tokens.pop(0) # pop method
+        obj_args = 0
+        if do_obj in os_classes:
+            obj_args = os_classes[do_obj][do_method]
+          
         while tokens[0][1].strip() != ';':
             if tokens[0][1].strip() == '(':
-                out_vm, tokens = self.token_handler(out_vm, tokens)
+                tokens.pop(0) # pop ()
                 out_vm, tokens = self.compile_expression_list(out_vm, tokens)
             elif tokens[0][1].strip() != ';':
-                out_vm, tokens = self.token_handler(out_vm, tokens)  # )?
+                tokens.pop(0)  # )
+        tokens.pop(0) # pop ;
 
-        out_vm, tokens = self.token_handler(out_vm, tokens)  # ;
-      
-        # out_vm = out_vm + f"{self.tabs(depth)}</doStatement>\n"
+        obj_call = VMWriter.write_call(f"{do_obj}.{do_method}", obj_args)
+        out_vm = out_vm + f"{obj_call}pop temp 0\n"
+        print(out_vm)
         return out_vm, tokens    
 
     def compile_statements(self, out_vm, tokens):
@@ -169,7 +216,6 @@ class CompilationEngine:
         """
         if not self.in_statements:
             self.in_statements = True
-            # out_vm = out_vm + f"{self.tabs(depth)}<statements>\n"
           
         statements_list = ['let', 'if', 'while', 'do', 'return']
 
@@ -179,7 +225,7 @@ class CompilationEngine:
                 out_vm, tokens = self.compile_let(out_vm, tokens)
             elif token == 'if':
                 out_vm, tokens = self.compile_if(out_vm, tokens)
-            elif token == 'return':
+            elif token == 'return':                
                 out_vm, tokens = self.compile_return(out_vm, tokens)
             elif token == 'do':
                 out_vm, tokens = self.compile_do(out_vm, tokens)
@@ -240,10 +286,8 @@ class CompilationEngine:
         iterate through remaining tags until we find closing bracket
         then wrap up
         """
-        # out_vm = out_vm + f"self.tabs(depth)}<subroutineBody>\n"
-        out_vm, tokens = self.token_handler(out_vm, tokens)  
+        tokens.pop(0) #pop open bracket
 
-        
         while tokens[0][1].strip() != '}':
             out_vm, tokens = self.token_handler(out_vm, tokens) 
 
@@ -252,56 +296,51 @@ class CompilationEngine:
         # out_vm = out_vm + f"{self.tabs(depth)}</subroutineBody>\n"
         return out_vm, tokens    
 
-    def compile_parameter_list(self, out_vm, tokens):
+    def compile_parameter_list(self, tokens):
         """
-        set first parameterList and call token handler for open paren
         iterate through remaining tags until we find closing paren,
         then call param list
         then call subroutine body
         then wrap up
         """
-        out_vm, tokens = self.token_handler(out_vm, tokens)  
-        # out_vm = out_vm + f"{self.tabs(depth)}<parameterList>\n"
-        
+        tokens.pop(0) #drop open paren
+
+        #sets the sumbol type and kind, if there are any symbols
         sym_type = tokens[0][1].strip() #int, Object, etc.
         sym_kind = 'argument' 
         
+        #loop through symbols till we hit a closing paren
         while tokens[0][1].strip() != ')':
             if tokens[0][0] == 'identifier':
                 self.tables.define(tokens[0][1].strip(), sym_type, sym_kind)
             elif tokens[0][1].strip() == ',': #new parameter coming, look ahead for type
                 sym_type = tokens[1][1].strip() #int, Object, etc.
-
-            out_vm, tokens = self.token_handler(out_vm, tokens) 
-
-  
-        # out_vm = out_vm + f"{self.tabs(depth)}</parameterList>\n"
-        out_vm, tokens = self.token_handler(out_vm, tokens) 
-        return out_vm, tokens
+            tokens.pop(0) #drop token
+        
+        tokens.pop(0) #drop closing paren
+        return tokens
 
     def compile_subroutine_dec(self, out_vm, tokens):
         """
-        set first subroutineDec and keyword tags, pop first time
-        iterate through remaining tags until we find opening paren,
-        then call param list
-        then call subroutine body
-        then wrap up
+        initiate subroutine symbol table
         """
-        self.tables.start_subroutine()
-        # out_vm = out_vm + f"{self.tabs(depth)}<subroutineDec>\n"
+        self.tables.start_subroutine()   
       
         if tokens[0][1].strip() == 'method':
             self.tables.define('this', self.class_name, 'argument')
-        out_vm, tokens = self.non_terminal_keyword(out_vm, tokens)  
-        
-        while tokens[0][1].strip() != '(':
-            out_vm, tokens = self.token_handler(out_vm, tokens)
 
-        out_vm, tokens = self.compile_parameter_list(out_vm, tokens)  
+        tokens.pop(0) #pop funtion, method, constructor keyword.
+        sub_type = tokens[0][1].strip()
+        tokens.pop(0) #drop sub type
+        sub_name = f"{self.class_name}.{tokens[0][1].strip()}"
+        tokens.pop(0) #drop sub name
+
+        tokens = self.compile_parameter_list(tokens)  
+        param_count = self.tables.var_count('argument') #get list of parameters
+        out_vm = VMWriter.write_function(sub_name, param_count) #nLocals might be more than this, might need to run after subrouteine_body?)
+
         out_vm, tokens = self.compile_subroutine_body(out_vm, tokens)
     
-        # out_vm = out_vm + f"{self.tabs(depth)}</subroutineDec>\n"
-
         return out_vm, tokens 
 
     def compile_class(self, out_vm, tokens):
@@ -342,7 +381,7 @@ class CompilationEngine:
         'while': compile_while,
         'return': compile_return,
         'do': compile_do    
-    }
+    }  
 
     def token_handler(self, out_vm, tokens):
         current = tokens[0]
@@ -401,10 +440,4 @@ class CompilationEngine:
         
         return out_vm    
 
-    # def tabs(self):
-    #     # tab_num = depth
-    #     tab = ""
-    #     while tab_num > 0:
-    #         tab = tab + "  "
-    #         tab_num = tab_num-1
-    #     return tab
+
