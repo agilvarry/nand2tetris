@@ -2,7 +2,7 @@ def write_push(segment, index):
     return f"push {segment} {index}\n"
 
 def write_pop(segment, index):
-    return
+    return  f"pop {segment} {index}\n"
 
 def write_arithmetic(command):
     return

@@ -9,7 +9,7 @@ if __name__ == "__main__":
     in_folder4 = r"C:\Users\agilvarry\Documents\github\nand2tetris\11\Average"
     in_folder5 = r"C:\Users\agilvarry\Documents\github\nand2tetris\11\Pong"
     in_folder6 = r"C:\Users\agilvarry\Documents\github\nand2tetris\11\ComplexArrays"
-    folders = [in_folder1]
+    folders = [in_folder2]
     for in_folder in folders:
         out_folder = in_folder+'\output'
         for root, dirs, files in os.walk(in_folder):
@@ -23,5 +23,6 @@ if __name__ == "__main__":
                     tokenized_jack = Tokenizer.tokenize(file_in) 
                     e = CompilationEngine(tokenized_jack)
                     compiled_jack = e.Engine()
+                    
                     compilation_out=open(f"{out_folder}\\{file_name}.vm", "w")
                     compilation_out.write(compiled_jack)
