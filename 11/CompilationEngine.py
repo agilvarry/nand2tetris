@@ -306,9 +306,7 @@ class CompilationEngine:
 
     def compile_class(self, out_vm, tokens):
         """
-        set first class and keyword tags, pop first time
-        iterate through remaining tags until we find closing braket
-        then wrap things up
+        set class name variable, pop unneeded tokens
         """
         tokens.pop(0) #remove class keyword
         self.class_name = tokens[0][1].strip()
