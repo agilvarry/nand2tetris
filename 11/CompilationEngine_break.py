@@ -146,8 +146,6 @@ class CompilationEngine:
                 out_vm = out_vm + VMWriter.write_push("pointer", 0)
 
         elif tokens[0][0] == 'identifier':
-
-            args = 0
             name = token
             kind = self.tables.kind_of(token)
             idx = self.tables.index_of(token)
@@ -164,13 +162,13 @@ class CompilationEngine:
                 id = f"{id}.{tokens[0][1].strip()}"
                 tokens.pop(0)  # drop identifier
                 tokens.pop(0)  # drop '('
-                out_vm, tokens, args = self.compile_expression_list(out_vm, tokens)
+                out_vm, tokens= self.compile_expression_list(out_vm, tokens)
 
-                out_vm = out_vm + VMWriter.write_call(id, args)
+                out_vm = out_vm + VMWriter.write_call(id, self.args)
                 tokens.pop(0)  # drop')'
             elif tokens[0][1].strip() == '(':
                 tokens.pop(0)  # (
-                out_vm, tokens, args = self.compile_expression_list(out_vm, tokens)
+                out_vm, tokens= self.compile_expression_list(out_vm, tokens)
                 tokens.pop(0)  # )         
 
         return out_vm, tokens

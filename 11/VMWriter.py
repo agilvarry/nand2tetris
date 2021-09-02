@@ -5,7 +5,6 @@ def write_pop(segment, index):
     return  f"pop {segment} {index}\n"
 
 def write_arithmetic(command):
-    print(command)
     return f"{command}\n"
 
 def write_label(label):
