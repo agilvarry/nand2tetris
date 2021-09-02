@@ -393,7 +393,6 @@ class CompilationEngine:
     def compile_term(self, out_vm, tokens):
         token = tokens[0][1].strip()
         tag = tokens[0][0].strip()
-        print(tokens[0])
         if tag == 'symbol':
             if token == '(':
                 self.nested_expression = True
@@ -410,7 +409,6 @@ class CompilationEngine:
                     out_vm = out_vm + VMWriter.write_arithmetic('not')
         elif tag == 'integerConstant':
             out_vm = out_vm + VMWriter.write_push("constant", token)
-            token = tokens[0][1].strip()
             tokens.pop(0)
         elif tag == 'stringConstant':
             out_vm = out_vm + VMWriter.write_push('constant', len(token))  # more work to understand here
@@ -418,6 +416,7 @@ class CompilationEngine:
             for c in token:
                 out_vm = out_vm + VMWriter.write_push('constant', ord(c))
                 out_vm = out_vm + VMWriter.write_call('String.appendChar', 2)
+            tokens.pop(0)
 
         elif tag == 'keyword':
             if token == "true":
@@ -427,14 +426,17 @@ class CompilationEngine:
                 out_vm = out_vm + VMWriter.write_push("constant", 0)
             elif token == 'this':
                 out_vm = out_vm + VMWriter.write_push("pointer", 0)
+            tokens.pop(0)
 
         elif tokens[0][0] == 'identifier':
+            nargs=0
             name = token
             kind = self.tables.kind_of(token)
             idx = self.tables.index_of(token)
 
             id = tokens[0][1].strip()  # identifier
             tokens.pop(0)
+            print(name)
 
             if tokens[0][1].strip() in ['[', '(']:
                 tokens.pop(0)  # [,()
