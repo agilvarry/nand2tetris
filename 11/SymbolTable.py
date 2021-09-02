@@ -26,7 +26,6 @@ class SymbolTable:
         return None
     
     def type_of(self, name):
-        print(name)
         if name in self.subroutine_table:
             # print(name, self.subroutine_table)
             return self.subroutine_table[name]["type"]

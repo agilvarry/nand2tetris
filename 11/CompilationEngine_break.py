@@ -258,8 +258,7 @@ class CompilationEngine:
             var_name = tokens[0][1].strip()
             tokens.pop(0)  # drop varName
             out_vm, tokens = self.token_handler(out_vm, tokens)  # [
-            out_vm, tokens = self.compile_expression(out_vm,
-                                                     tokens)  # i probably need to move all of the DO stuff into compile expression
+            out_vm, tokens = self.compile_expression(out_vm,tokens)  # i probably need to move all of the DO stuff into compile expression
             out_vm, tokens = self.token_handler(out_vm, tokens)  # ]
         else:
             var_name = tokens[0][1].strip()
