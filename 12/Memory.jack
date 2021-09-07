@@ -46,7 +46,7 @@ class Memory {
                 let fit = next; //set fit location if it is
                 let block = (fit + 1 + ram[fit + 1]) - size; //set block address
                 let ram[block - 1] = size; //block size
-                let ram[fit + 1] = ram[fit + 1] - (size + 2); //fit block length
+                let ram[fit + 1] = ram[fit + 1] - (size + 2); //block length
             }
             if(ram[next] > 0){           
                 let next = ram[next];
