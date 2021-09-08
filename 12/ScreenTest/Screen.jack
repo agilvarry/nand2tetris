@@ -15,9 +15,10 @@ class Screen {
 
     /** Initializes the Screen. */
     function void init() {
+        var int i, val;
+
         let color = true;
         let screen = 16384;
-        var int i, val;
         let twoToThe = Array.new(16);
         let i = 0;
         let val = 1;
@@ -67,29 +68,117 @@ class Screen {
 
     /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
     function void drawLine(int x1, int y1, int x2, int y2) {
-        var int a, b, diff, dx, dy;
+        var int a, b, dx, dy;
         let a = 0;
         let b = 0;
-        let diff = 0;
         let dx = x2 - x1;
         let dy = y2 - y1;
         
         //horizontal line
+        if(dy = 0){
+            if(dx < 0){
+                let x1 = x1 + x2;
+                let x2 = x1 - x2;
+                let x1 = x1 - x2;
+                let dx = x2 - x1;
+            }
+            while (a < dx) {
+                do Screen.drawPixel(x1 + a, y1);
+                let a = a + 1;
+            }
+        }
 
         //vertical line
-
-        // rising
-
-        //falling
-
+        
+        if (dx = 0) {
+            if (dy < 0) {
+                let y1 = y1 + y2;
+                let y2 = y1 - y2;
+                let y1 = y1 - y2;
+                let dy = y2 - y1;
+            }
+            while (b < dy) {
+                do Screen.drawPixel(x1, y1 + b);
+                let b = b + 1;
+            }
+        }
+        
+        // rising falling   
+        
+            if (dx < 0) {
+                if (dy < 0) {
+                    do Screen.fallingLine(x2, -dx, y2, -dy);
+                }
+                else {
+                    do Screen.risingLine(x2, -dx, y2, dy);
+                }
+            }
+            else {
+                if (dy < 0) {
+                    do Screen.risingLine(x1, dx, y1, -dy);
+                }
+                else {
+                    do Screen.fallingLine(x1, dx, y1, dy);
+                }
+            }
+        
+        return;
     }
-
+     function void fallingLine(int x1, int dx, int y1, int dy) {
+        var int a, b, diff;
+        let a = 0;
+        let b = 0;
+        let diff = 0;
+        while (~(a > dx) & ~(b > dy)) {
+            do Screen.drawPixel(x1 + a, y1 + b);
+            if (diff < 0) {
+                let a = a + 1;
+                let diff = diff + dy;
+            }
+            else {
+                let b = b + 1;
+                let diff = diff - dx;
+            }
+        }
+        return;
+    }
+    function void risingLine(int x1, int dx, int y1, int dy) {
+        var int a, b, diff;
+        let a = 0;
+        let b = 0;
+        let diff = 0;
+        while (~(a > dx) & ~(b > dy)) {
+            do Screen.drawPixel(x1 + a, y1 - b);
+            if (diff < 0) {
+                let a = a + 1;
+                let diff = diff + dy;
+            }
+            else {
+                let b = b + 1;
+                let diff = diff - dx;
+            }
+        }
+        return;
+    }
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      * and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
+      do Screen.drawLine(x1, y1, x2, y1);
+      do Screen.drawLine(x2, y1, x2, y2);
+      do Screen.drawLine(x2, y2, x1, y2);
+      do Screen.drawLine(x1, y2, x1, y1);
+      return;
     }
 
     /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
     function void drawCircle(int x, int y, int r) {
+        var int i;
+        let i = -r;
+
+        while (i < (r + 1)) {
+            do Screen.drawLine((x - Math.sqrt((r * r) - (i * i))), (y + i), (x + Math.sqrt((r * r) - (i * i))), (y + i));
+            let i = i + 1;
+        }
+        return;
     }
 }
