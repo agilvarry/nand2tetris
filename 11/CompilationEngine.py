@@ -93,152 +93,151 @@ class CompilationEngine:
         self.in_statements = False
         self.nested_expression = False
         self.xml_in = xml_in
+        self.vm_out = ""
+        self.tokens = []
         self.tables = SymbolTable()
         self.class_name = ""
         self.label_end = 0
         self.args = 0
 
-    def compile_class(self, out_vm, tokens):
+    def next_token(self):
+        self.tokens.pop(0)
+        print(self.tokens)
+
+    def write_vm(self,vm):
+        self.vm_out = self.vm_out + vm  
+
+    def compile_class(self):
         """
         set class name variable,drop unneeded tokens
         """
-        tokens.pop(0)  # remove class keyword
-        self.class_name = tokens[0][1].strip()
-        tokens.pop(0)  # remove class name identifier
-        tokens.pop(0)  # remove opening bracket
+        self.next_token()  # remove class keyword
+        self.class_name = self.tokens[0][1].strip()
+        self.next_token()  # remove class name identifier
+        self.next_token()  # remove opening bracket
 
         # go into loop through rest of class
-        while tokens[0][1].strip() != '}':
-            out_vm, tokens = self.token_handler(out_vm, tokens)
+        while self.tokens[0][1].strip() != '}':
+            self.token_handler()
 
-        tokens.pop(0)  # remove closing braket
+        self.next_token()  # remove closing braket
 
-        return out_vm, tokens
+    def token_handler(self):
+        current = self.tokens[0]
+        token = current[1].strip()
 
-    def token_handler(self, out_vm, tokens):
-        current = tokens[0]
-        tag, token = current[0], current[1].strip()
-        print(tokens[0])
         if token in self.non_terminal:
             if token == 'class':
-                out_vm, tokens = self.compile_class(out_vm, tokens)
+                self.compile_class()
             elif token in ['static', 'field']:
-                out_vm, tokens = self.compile_class_var_dec(out_vm, tokens)
+                self.compile_class_var_dec()
             elif token in ['constructor', 'function', 'method']:
-                out_vm, tokens = self.compile_subroutine_dec(out_vm, tokens)
+                self.compile_subroutine_dec()
             elif token == 'var':
-                out_vm, tokens = self.compile_var_dec(out_vm, tokens)
+                self.compile_var_dec()
             elif token in ['let', 'if', 'while', 'do', 'return']:
-                out_vm, tokens = self.compile_statements(out_vm, tokens)
+                self.compile_statements()
 
-        return out_vm, tokens
-
-    def compile_class_var_dec(self, out_vm, tokens):
+    def compile_class_var_dec(self):
         """
         set first classVarDec and keyword tags,drop first time
         iterate through remaining tags until we find semicolon
         then wrap things up
         """
 
-        sym_kind = tokens[0][1].strip()
-        tokens.pop(0)
-        sym_type = tokens[1][1].strip()
-        tokens.pop(0)
+        sym_kind = self.tokens[0][1].strip()
+        self.next_token()
+        sym_type = self.tokens[1][1].strip()
+        self.next_token()
 
-        while tokens[0][1].strip() != ';':
-            if tokens[0][1].strip() != ',':
+        while self.tokens[0][1].strip() != ';':
+            if self.tokens[0][1].strip() != ',':
                 # maybe add 'field' count here? id sym_kind == field?  # TODO
-                self.tables.define(tokens[0][1].strip(), sym_type, sym_kind)
-            tokens.pop(0)
+                self.tables.define(self.tokens[0][1].strip(), sym_type, sym_kind)
+            self.next_token()
 
-        tokens.pop(0) # drop ';'
+        self.next_token() # drop ';'
 
-        return out_vm, tokens
 
-    def compile_subroutine_dec(self, out_vm, tokens):
+    def compile_subroutine_dec(self):
         """
         initiate subroutine symbol table
         """
         self.tables.start_subroutine()
         # maybe counting if, while, var here? #TODO
 
-        if tokens[0][1].strip() == 'method':
+        if self.tokens[0][1].strip() == 'method':
             self.tables.define('this', self.class_name, 'argument')
 
-        tokens.pop(0)  # pop funtion, method, constructor keyword.
-        ret_type = tokens[0][1].strip()  # void, int, etc
-        tokens.pop(0)  # drop ret type
-        sub_name = f"{self.class_name}.{tokens[0][1].strip()}"
-        tokens.pop(0)  # drop sub name
+        self.next_token()  # pop funtion, method, constructor keyword.
+        ret_type = self.tokens[0][1].strip()  # void, int, etc
+        self.next_token()  # drop ret type
+        sub_name = f"{self.class_name}.{self.tokens[0][1].strip()}"
+        self.next_token()  # drop sub name
 
-        tokens = self.compile_parameter_list(tokens)
-        out_vm, tokens = self.compile_subroutine_body(out_vm, tokens, sub_name)
+        self.compile_parameter_list()
+        self.compile_subroutine_body(sub_name)
 
         # param_count = self.tables.var_count('argument') #get list of parameters
 
         # out_fun = VMWriter.write_function(sub_name, param_count) #nLocals might be more than this
         # out_vm = out_fun+out_vm #idkidkidkidk
-        return out_vm, tokens
 
-    def compile_parameter_list(self, tokens):
+    def compile_parameter_list(self):
         """
         iterate through remaining tags until we find closing paren,
         then call param list
         then call subroutine body
         then wrap up
         """
-        tokens.pop(0)  # drop open paren
+        self.next_token()  # drop open paren
 
         # sets the sumbol type and kind, if there are any symbols
-        sym_type = tokens[0][1].strip()  # int, Object, etc.
+        sym_type = self.tokens[0][1].strip()  # int, Object, etc.
         sym_kind = 'argument'
 
         # loop through symbols till we hit a closing paren
 
-        while tokens[0][1].strip() != ')':
-            if tokens[0][0] == 'identifier':
-                self.tables.define(tokens[0][1].strip(), sym_type, sym_kind)
-            elif tokens[0][1].strip() == ',':  # new parameter coming, look ahead for type
-                sym_type = tokens[1][1].strip()  # int, Object, etc.
-            tokens.pop(0)  # drop token
+        while self.tokens[0][1].strip() != ')':
+            if self.tokens[0][0] == 'identifier':
+                self.tables.define(self.tokens[0][1].strip(), sym_type, sym_kind)
+            elif self.tokens[0][1].strip() == ',':  # new parameter coming, look ahead for type
+                sym_type = self.tokens[1][1].strip()  # int, Object, etc.
+            self.next_token()  # drop token
 
-        tokens.pop(0)  # drop closing paren
-        return tokens
+        self.next_token()  # drop closing paren
 
-    def compile_subroutine_body(self, out_vm, tokens, sub_name):
+    def compile_subroutine_body(self, sub_name):
         """
         set first parameterList and call token handler for open bracket
         iterate through remaining tags until we find closing bracket
         then wrap up
         """
-        tokens.pop(0)  # pop open bracket
+        self.next_token()  # pop open bracket
 
-        while tokens[0][1].strip() != '}':
-            if tokens[0][1].strip() == "var":
-                tokens = self.compile_var_dec(tokens)
+        while self.tokens[0][1].strip() != '}':
+            if self.tokens[0][1].strip() == "var":
+                self.compile_var_dec()
             else:
                 param_count = self.tables.var_count('local')  # get list of parameters
-                out_vm = out_vm + VMWriter.write_function(sub_name, param_count)  # get list of parameters
-                out_vm, tokens = self.compile_statements(out_vm, tokens)
-        tokens.pop(0)  # pop close bracket
+                out_vm = VMWriter.write_function(sub_name, param_count)  # get list of parameters
+                self.write_vm(out_vm) 
+                self.compile_statements()
+        self.next_token()  # pop close bracket
 
-        return out_vm, tokens
-
-    def compile_var_dec(self, tokens):
+    def compile_var_dec(self):
         sym_kind = 'local'
-        tokens.pop(0)
-        sym_type = tokens[1][1].strip() #boolean, int, etc.
-        tokens.pop(0)
+        self.next_token()
+        sym_type = self.tokens[1][1].strip() #boolean, int, etc.
+        self.next_token()
 
-        while tokens[0][1].strip() != ';':
-            if tokens[0][0] == 'identifier' and tokens[1][0] != 'identifier': #TODO this handles if an Object is the var type. Maybe not good enough?
-                self.tables.define(tokens[0][1].strip(), sym_type, sym_kind)
-            tokens.pop(0)  # drop sym_type, var
-        tokens.pop(0)  # drop ;
+        while self.tokens[0][1].strip() != ';':
+            if self.tokens[0][0] == 'identifier' and self.tokens[1][0] != 'identifier': #TODO this handles if an Object is the var type. Maybe not good enough?
+                self.tables.define(self.tokens[0][1].strip(), sym_type, sym_kind)
+            self.next_token()  # drop sym_type, var
+        self.next_token()  # drop ;
 
-        return tokens
-
-    def compile_statements(self, out_vm, tokens):
+    def compile_statements(self):
         """
         check if we're in a statements block or not to initialize or not 
         """
@@ -247,61 +246,59 @@ class CompilationEngine:
 
         statements_list = ['let', 'if', 'while', 'do', 'return']
 
-        while tokens[0][1].strip() in statements_list:
-            token = tokens[0][1].strip()
+        while self.tokens[0][1].strip() in statements_list:
+            token = self.tokens[0][1].strip()
             if token == 'let':
-                out_vm, tokens = self.compile_let(out_vm, tokens)
+                self.compile_let(out_vm)
             elif token == 'if':
                 out_vm, tokens = self.compile_if(out_vm, tokens)
             elif token == 'return':
-                out_vm, tokens = self.compile_return(out_vm, tokens)
+                self.compile_return()
             elif token == 'do':
-                out_vm, tokens = self.compile_do(out_vm, tokens)
+                self.compile_do()
             elif token == 'while':
                 out_vm, tokens = self.compile_while(out_vm, tokens)
 
         self.in_statements = False
 
-        return out_vm, tokens
+    def compile_let(self):
 
-    def compile_let(self, out_vm, tokens):
-
-        tokens.pop(0) #drop let
-        var_name = tokens[0][1].strip()
-        tokens.pop(0)  # drop varName
+        self.next_token() #drop let
+        var_name = self.tokens[0][1].strip()
+        self.next_token()  # drop varName
         sym_kind = self.tables.kind_of(var_name)
         sym_idx = self.tables.index_of(var_name)
 
-        if tokens[1][1].strip() == '[': #TODO some arr stuff
-            tokens.pop(0) # [
-            out_vm, tokens = self.compile_expression(out_vm, tokens)
-            tokens.pop(0)  # ]            
+        if self.tokens[1][1].strip() == '[': #TODO some arr stuff
+            self.next_token() # [
+            self.compile_expression() 
+            self.next_token()  # ]            
 
-        tokens.pop(0)  # drop =
-        out_vm, tokens = self.compile_expression(out_vm, tokens)  # expression
-        tokens.pop(0)  # drop ;
-        out_vm = out_vm + VMWriter.write_pop(sym_kind, sym_idx)
-        return out_vm, tokens
+        self.next_token()  # drop =
+        self.compile_expression()  # expression
+        self.next_token()  # drop ;
+        out_vm = VMWriter.write_pop(sym_kind, sym_idx)
+        self.write_vm(out_vm)
 
-    def compile_do(self, out_vm, tokens):
+    def compile_do(self):
         """
         get Method call info, call expression list
         """
-        tokens.pop(0)  # drop do
-        while tokens[0][1].strip() != ';':
-            if tokens[0][1].strip() == '(':
-                tokens.pop(0)  # drop ()
-                out_vm, tokens = self.compile_expression_list(out_vm, tokens)
-            elif tokens[0][1].strip() == ')':
-                tokens.pop(0)  # drop ()
+        self.next_token()  # drop do
+        while self.tokens[0][1].strip() != ';':
+            if self.tokens[0][1].strip() == '(':
+                self.next_token()  # drop ()
+                self.compile_expression_list()
+            elif self.tokens[0][1].strip() == ')':
+                self.next_token()  # drop ()
             else:
-                out_vm, tokens= self.compile_expression_list(out_vm, tokens)
+                self.compile_expression_list()
         # out_vm, tokens = self.compile_subroutine_call(out_vm, tokens)
 
-        tokens.pop(0)  # drop ;
-        out_vm = out_vm + "pop temp 0\n"
+        self.next_token()  # drop ;
+        out_vm = "pop temp 0\n"
+        self.write_vm(out_vm)
 
-        return out_vm, tokens
 
     def compile_while(self, out_vm, tokens):
         self.label_end = self.label_end + 1
@@ -323,15 +320,15 @@ class CompilationEngine:
 
         return out_vm, tokens
 
-    def compile_return(self, out_vm, tokens):
-        tokens.pop(0)  # drop return
+    def compile_return(self):
+        self.next_token()  # drop return
 
-        while tokens[0][1].strip() != ';':
-            out_vm, tokens = self.compile_expression(out_vm, tokens)
+        while self.tokens[0][1].strip() != ';':
+            self.compile_expression()
 
-        tokens.pop(0)  # ;
-        out_vm = out_vm + VMWriter.write_return()  # TODO void?
-        return out_vm, tokens
+        self.next_token()  # ;
+        out_vm = VMWriter.write_return()  # TODO void?
+        self.write_vm(out_vm)
 
     def compile_if(self, out_vm, tokens):
         self.label_end = self.label_end + 1
@@ -359,109 +356,120 @@ class CompilationEngine:
         out_vm = out_vm + VMWriter.write_label(f"END{self.label_end}")
         return out_vm, tokens
 
-    def compile_expression(self, out_vm, tokens):
-        if tokens[0][1].strip() == '(':
-            tokens.pop(0)  # drop (
-            out_vm, tokens = self.compile_expression(out_vm, tokens)
-            tokens.pop(0)  # drop )
+    def compile_expression(self):
+        if self.tokens[0][1].strip() == '(':
+            self.next_token()  # drop (
+            self.compile_expression()
+            self.next_token()  # drop )
         else:
-            out_vm, tokens = self.compile_term(out_vm, tokens)
+            self.compile_term()
 
-        while tokens[0][1].strip() in ['+', '-', '*', '/', '&', '|', '<', '>', '=']:
-            token = tokens[0][1].strip()
-            tokens.pop(0)  # drop token
-            out_vm, tokens = self.compile_term(out_vm, tokens)
+        while self.tokens[0][1].strip() in ['+', '-', '*', '/', '&', '|', '<', '>', '=']:
+            token = self.tokens[0][1].strip()
+            self.next_token()  # drop token
+            self.compile_term()
             if token == '/':
-                out_vm = out_vm + VMWriter.write_call('Math.divide', 2)
+                out_vm = VMWriter.write_call('Math.divide', 2)
+                self.write_vm(out_vm)
             elif token == '*':
-                out_vm = out_vm + VMWriter.write_call('Math.multiply', 2)
+                out_vm = VMWriter.write_call('Math.multiply', 2)
+                self.write_vm(out_vm)
             else:
-                out_vm = out_vm + VMWriter.write_arithmetic(math_ops[token])
-        return out_vm, tokens
+                out_vm = VMWriter.write_arithmetic(math_ops[token])
+                self.write_vm(out_vm)
 
-    def compile_expression_list(self, out_vm, tokens):
+    def compile_expression_list(self):
         self.args = 0
-        while tokens[0][1].strip() not in [';',')']:
-            if tokens[0][1].strip() == ',':
-                tokens.pop(0)  # drop ,
+        while self.tokens[0][1].strip() not in [';',')']:
+            if self.tokens[0][1].strip() == ',':
+                self.next_token()  # drop ,
             else:
                 self.args = self.args + 1
-                out_vm, tokens = self.compile_expression(out_vm, tokens)
+                self.compile_expression()
 
-        return out_vm, tokens
-
-    def compile_term(self, out_vm, tokens):
-        token = tokens[0][1].strip()
-        tag = tokens[0][0].strip()
+    def compile_term(self):
+        token = self.tokens[0][1].strip()
+        tag = self.tokens[0][0].strip()
         if tag == 'symbol':
             if token == '(':
                 self.nested_expression = True
-                tokens.pop(0)  # drop (
-                out_vm, tokens = self.compile_expression(out_vm, tokens)
-                tokens.pop(0)  # drop )
+                self.next_token()  # drop (
+                self.compile_expression()
+                self.next_token()  # drop )
                 self.nested_expression = False
             elif token in ['-', '~']:
-                tokens.pop(0)  # drop symbol
-                out_vm, tokens = self.compile_term(out_vm, tokens)
+                self.next_token()  # drop symbol
+                self.compile_term()
                 if token == '-':
-                    out_vm = out_vm + VMWriter.write_arithmetic('neg')
+                    out_vm = VMWriter.write_arithmetic('neg')
+                    self.write_vm(out_vm)
                 else:
-                    out_vm = out_vm + VMWriter.write_arithmetic('not')
+                    out_vm = VMWriter.write_arithmetic('not')
+                    self.write_vm(out_vm)
         elif tag == 'integerConstant':
-            out_vm = out_vm + VMWriter.write_push("constant", token)
-            tokens.pop(0)
+            out_vm = VMWriter.write_push("constant", token)
+            self.write_vm(out_vm)
+            self.next_token()
         elif tag == 'stringConstant':
-            out_vm = out_vm + VMWriter.write_push('constant', len(token))  # more work to understand here
-            out_vm = out_vm + VMWriter.write_call('String.new', 1)
+            out_vm = VMWriter.write_push('constant', len(token))  # more work to understand here
+            self.write_vm(out_vm)
+            out_vm = VMWriter.write_call('String.new', 1)
+            self.write_vm(out_vm)
             for c in token:
-                out_vm = out_vm + VMWriter.write_push('constant', ord(c))
-                out_vm = out_vm + VMWriter.write_call('String.appendChar', 2)
-            tokens.pop(0)
+                out_vm = VMWriter.write_push('constant', ord(c))
+                self.write_vm(out_vm)
+                out_vm = VMWriter.write_call('String.appendChar', 2)
+                self.write_vm(out_vm)
+            self.next_token()
 
         elif tag == 'keyword':
             if token == "true":
-                out_vm = out_vm + VMWriter.write_push("constant", 0)
-                out_vm = out_vm + VMWriter.write_arithmetic("not")
+                out_vm = VMWriter.write_push("constant", 0)
+                self.write_vm(out_vm)
+                out_vm = VMWriter.write_arithmetic("not")
+                self.write_vm(out_vm)
             if token in ["false", 'null']:
-                out_vm = out_vm + VMWriter.write_push("constant", 0)
+                out_vm = VMWriter.write_push("constant", 0)
+                self.write_vm(out_vm)
             elif token == 'this':
-                out_vm = out_vm + VMWriter.write_push("pointer", 0)
-            tokens.pop(0)
+                out_vm = VMWriter.write_push("pointer", 0)
+                self.write_vm(out_vm)
+            self.next_token()
 
-        elif tokens[0][0] == 'identifier':
-            nargs=0
-            
-            kind = self.tables.kind_of(token)
+        elif self.tokens[0][0] == 'identifier':
             idx = self.tables.index_of(token)
-
-            id = tokens[0][1].strip()  # identifier
-            tokens.pop(0)
-            if  tokens[0][1].strip() == '[':
-                tokens.pop(0)  #  [
-                out_vm, tokens = self.compile_expression(out_vm, tokens)
-                tokens.pop(0)  #  ]
-                vm_out = vm_out + VMWriter.write_push(token, idx) #iffy TODO
-                vm_out = vm_out + VMWriter.write_arithmetic("add")
-            elif tokens[0][1].strip() in ['(', '.']:
-                tokens.pop(0)  #  (
-                out_vm = out_vm + VMWriter.write_push('pointer', 0)
-                out_vm, tokens = self.compile_expression(out_vm, tokens)
-                nargs = self.args + 1
-                tokens.pop(0)  #  )
-                out_vm = out_vm + VMWriter.write_call(f"{self.class_name}.{name}", nargs)
-
-            elif tokens[0][1].strip() == '.':
+            id = self.tokens[0][1].strip()  # identifier
+            self.next_token()
+            if  self.tokens[0][1].strip() == '[':
+                self.next_token()  #  [
+                self.compile_expression()
+                self.next_token()  #  ]
+                vm_out = VMWriter.write_push(token, idx) #iffy TODO
+                self.write_vm(out_vm)
+                vm_out = VMWriter.write_arithmetic("add")
+                self.write_vm(out_vm)
+            elif self.tokens[0][1].strip() == '(':
+                self.next_token()  #  (
+                out_vm = VMWriter.write_push('pointer', 0)
+                self.write_vm(out_vm)
+                self.compile_expression()
                 
-                tokens.pop(0)  # drop '.'
-                id = f"{id}.{tokens[0][1].strip()}"
-                tokens.pop(0)  # drop identifier
-                tokens.pop(0)  # drop '('
-                out_vm, tokens= self.compile_expression_list(out_vm, tokens)
+                nargs = self.args + 1
+                self.next_token()  #  )
+                out_vm = VMWriter.write_call(f"{self.class_name}.{id}", nargs)
+                self.write_vm(out_vm)
 
-                out_vm = out_vm + VMWriter.write_call(id, self.args)
-                tokens.pop(0)  # drop')'
+            elif self.tokens[0][1].strip() == '.':
+                
+                self.next_token()  # drop '.'
+                id = f"{id}.{self.tokens[0][1].strip()}"
+                self.next_token()  # drop identifier
+                self.next_token()  # drop '('
+                self.compile_expression_list()
 
-        return out_vm, tokens
+                out_vm = VMWriter.write_call(id, self.args)
+                self.write_vm(out_vm)
+                self.next_token()  # drop')'
 
     non_terminal = [
         'class',
@@ -480,14 +488,12 @@ class CompilationEngine:
 
     def Engine(self):
         root = ET.fromstring(self.xml_in)
-        out_vm = ""
 
         # create list of tags and tokens
-        tokens = []
         for child in root:
-            tokens.append([child.tag,child.text])
+            self.tokens.append([child.tag,child.text])
 
-        while len(tokens) > 1:
-            out_vm, tokens = self.token_handler(out_vm, tokens)
+        while len(self.tokens) > 1:
+            self.token_handler()
 
-        return out_vm
+        return self.vm_out
