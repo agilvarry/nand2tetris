@@ -453,9 +453,9 @@ class CompilationEngine:
                 self.next_token()  #  [
                 self.compile_expression()
                 self.next_token()  #  ]
-                vm_out = VMWriter.write_push(token, idx) #iffy TODO
+                out_vm = VMWriter.write_push(token, idx) #iffy TODO
                 self.write_vm(out_vm)
-                vm_out = VMWriter.write_arithmetic("add")
+                out_vm = VMWriter.write_arithmetic("add")
                 self.write_vm(out_vm)
             elif self.tokens[0][1].strip() == '(':
                 self.next_token()  #  (
