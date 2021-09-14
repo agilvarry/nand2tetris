@@ -249,15 +249,15 @@ class CompilationEngine:
         while self.tokens[0][1].strip() in statements_list:
             token = self.tokens[0][1].strip()
             if token == 'let':
-                self.compile_let(out_vm)
+                self.compile_let()
             elif token == 'if':
-                out_vm, tokens = self.compile_if(out_vm, tokens)
+                self.compile_if()
             elif token == 'return':
                 self.compile_return()
             elif token == 'do':
                 self.compile_do()
             elif token == 'while':
-                out_vm, tokens = self.compile_while(out_vm, tokens)
+                self.compile_while()
 
         self.in_statements = False
 
@@ -291,34 +291,38 @@ class CompilationEngine:
                 self.compile_expression_list()
             elif self.tokens[0][1].strip() == ')':
                 self.next_token()  # drop ()
-            else:
+            elif self.tokens[1][1].strip() == '.':
+                out_vm  = VMWriter.write_push("local", 0)
+                self.write_vm(out_vm)
                 self.compile_expression_list()
         # out_vm, tokens = self.compile_subroutine_call(out_vm, tokens)
-
         self.next_token()  # drop ;
         out_vm = "pop temp 0\n"
         self.write_vm(out_vm)
 
-
-    def compile_while(self, out_vm, tokens):
-        self.label_end = self.label_end + 1
-        out_vm = out_vm + VMWriter.write_label(f"WHILE_EXP{self.label_end}")
-        tokens.pop(0)  # drop while
-        tokens.pop(0)  # drop (
-        out_vm, tokens = self.compile_expression(out_vm, tokens)
-        tokens.pop(0)  # drop )
-        out_vm = out_vm + VMWriter.write_arithmetic("not")
-        out_vm = out_vm + VMWriter.write_if(f"WHILE_EXP{self.label_end}")
-        tokens.pop(0)  # drop {
+    def compile_while(self):
+        out_vm =VMWriter.write_label(f"WHILE_EXP{self.label_end}")
+        self.write_vm(out_vm)
+        self.next_token()  # drop while
+        self.next_token()  # drop (
+        self.compile_expression()
+        self.next_token()  # drop )
+        out_vm = VMWriter.write_arithmetic("not")
+        self.write_vm(out_vm)
+        out_vm = VMWriter.write_if(f"WHILE_EXP{self.label_end}")
+        self.write_vm(out_vm)
+        self.next_token()  # drop {
         self.in_statements = False  # risky flag flipping
-        out_vm, tokens = self.compile_statements(out_vm, tokens)  # statement
+        self.compile_statements()  # statement
         self.in_statements = True  # risky flag flipping
-        tokens.pop(0)  # drop }
+        self.next_token()  # drop }
 
-        out_vm = out_vm + VMWriter.write_goto(f"WHILE_EXP{self.label_end}")
-        out_vm = out_vm + VMWriter.write_label(f"WHILE_END{self.label_end}")
+        out_vm = VMWriter.write_goto(f"WHILE_EXP{self.label_end}")
+        self.write_vm(out_vm)
+        out_vm = VMWriter.write_label(f"WHILE_END{self.label_end}")
+        self.write_vm(out_vm)
 
-        return out_vm, tokens
+        self.label_end = self.label_end + 1
 
     def compile_return(self):
         self.next_token()  # drop return
@@ -330,31 +334,37 @@ class CompilationEngine:
         out_vm = VMWriter.write_return()  # TODO void?
         self.write_vm(out_vm)
 
-    def compile_if(self, out_vm, tokens):
+    def compile_if(self):
         self.label_end = self.label_end + 1
-        tokens.pop(0)  # drop while
-        tokens.pop(0)  # drop (
-        out_vm, tokens = self.compile_expression(out_vm, tokens)
-        tokens.pop(0)  # drop )
-        out_vm = out_vm + VMWriter.write_if(f"IF_TRUE{self.label_end}")
-        out_vm = out_vm + VMWriter.write_goto(f"IF_FALSE{self.label_end}")
-        out_vm = out_vm + VMWriter.write_label(f"IF_TRUE{self.label_end}")
-        tokens.pop(0)  # drop {
+        self.next_token()  # drop while
+        self.next_token()  # drop (
+        self.compile_expression()
+        self.next_token()  # drop )
+        out_vm = VMWriter.write_if(f"IF_TRUE{self.label_end}")
+        self.write_vm(out_vm)
+        out_vm = VMWriter.write_goto(f"IF_FALSE{self.label_end}")
+        self.write_vm(out_vm)
+        out_vm = VMWriter.write_label(f"IF_TRUE{self.label_end}")
+        self.write_vm(out_vm)
+        self.next_token()  # drop {
         self.in_statements = False  # risky flag flipping
-        out_vm, tokens = self.compile_statements(out_vm, tokens)  # statement
+        self.compile_statements()  # statement
         self.in_statements = True  # risky flag flipping
-        tokens.pop(0)  # drop }
-        out_vm = out_vm + VMWriter.write_goto(f"END{self.label_end}")
-        out_vm = out_vm + VMWriter.write_label(f"IF_FALSE{self.label_end}")
-        if tokens[0][1].strip() == "else":
-            tokens.pop(0)  # drop else
-            tokens.pop(0)  # drop braket
+        self.next_token()  # drop }
+        out_vm = VMWriter.write_goto(f"END{self.label_end}")
+        self.write_vm(out_vm)
+        out_vm = VMWriter.write_label(f"IF_FALSE{self.label_end}")
+        self.write_vm(out_vm)
+        if self.tokens[0][1].strip() == "else":
+            self.next_token()  # drop else
+            self.next_token()  # drop braket
             self.in_statements = False  # risky flag flipping
-            out_vm, tokens = self.compile_statements(out_vm, tokens)  # statement
+            self.compile_statements()  # statement
             self.in_statements = True  # risky flag flipping
-            tokens.pop(0)  # drop braket
-        out_vm = out_vm + VMWriter.write_label(f"END{self.label_end}")
-        return out_vm, tokens
+            self.next_token()  # drop braket
+        out_vm = VMWriter.write_label(f"END{self.label_end}")
+        self.write_vm(out_vm)
+
 
     def compile_expression(self):
         if self.tokens[0][1].strip() == '(':
@@ -363,8 +373,7 @@ class CompilationEngine:
             self.next_token()  # drop )
         else:
             self.compile_term()
-
-        while self.tokens[0][1].strip() in ['+', '-', '*', '/', '&', '|', '<', '>', '=']:
+        if self.tokens[0][1].strip() in ['+', '-', '*', '/', '&', '|', '<', '>', '=']:
             token = self.tokens[0][1].strip()
             self.next_token()  # drop token
             self.compile_term()
@@ -488,7 +497,6 @@ class CompilationEngine:
 
     def Engine(self):
         root = ET.fromstring(self.xml_in)
-
         # create list of tags and tokens
         for child in root:
             self.tokens.append([child.tag,child.text])
